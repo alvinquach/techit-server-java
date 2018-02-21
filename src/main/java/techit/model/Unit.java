@@ -9,35 +9,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Unit")
-public class Unit implements Serializable {
+@Table(name = "units")
+public class Unit implements Serializable{
 	private static final long serialVersionUID = 1L;
-
-	public Unit() {
-    	
-    }
-
-	@Id
-    @GeneratedValue
-	private int id; // Unit's unique id.
-
-	@Column(nullable = false)
-	private String name; // Name of the department.
-
-	// A unit may have more than one supervisor. This will allow them to assign
-	// temporary leads when they are gone.
-	private String phone;
-    private String location;
-    private String email;
-    private String description;
-    
-	// --------------- Getters and Setters below ---------------
 	
-    public int getId() {
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@Column(nullable = false)
+	private String name; // name of the department
+
+//	@OneToMany(mappedBy = "unit")
+//	private List<User> supervisors;
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -49,38 +39,12 @@ public class Unit implements Serializable {
 		this.name = name;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setContact(String phone) {
-		this.phone = phone;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
+//	public List<User> getSupervisors() {
+//		return supervisors;
+//	}
+//
+//	public void setSupervisors(List<User> supervisors) {
+//		this.supervisors = supervisors;
+//	}
 	
-	
-
 }

@@ -1,72 +1,74 @@
 package techit.model;
 
 import java.io.Serializable;
+import java.sql.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Update")
-public class Update implements Serializable {
+@Table(name = "updates")
+public class Update implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
 
-    @Id
-    @GeneratedValue
-	private int id;
-    
-    @ManyToOne
-    private Ticket ticket;
-    
-    @Column(nullable = false)
-	private int ticketId;
-    @Column(nullable = false)
-	private String modifier; // modifier's username
-    @Column(nullable = false)
-	private String modifiedDate;
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@ManyToOne
+	@JoinColumn(name="ticketId")
+	private Ticket ticket; // associated ticket
 
-    private String updateDetails;
-   
-    public Update(){
-		
-	}
+	@ManyToOne
+	@JoinColumn(name="modifiedById")
+	private User modifiedBy;
 	
-	// --------------- Getters and Setters below ---------------	
+	private String updateDetails;
 	
-	public int getId() {
+	private Date modifiedDate;
+
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+
+	public void setId(Long id) {
 		this.id = id;
 	}
-	public int getTicket() {
-		return ticketId;
+
+	public Ticket getTicket() {
+		return ticket;
 	}
-	public void setTicket(int ticket) {
-		this.ticketId = ticket;
+
+	public void setTicket(Ticket ticket) {
+		this.ticket = ticket;
 	}
-	public String getModifier() {
-		return modifier;
+
+	public User getModifiedBy() {
+		return modifiedBy;
 	}
-	public void setModifier(String modifier) {
-		this.modifier = modifier;
+
+	public void setModifiedBy(User modifiedBy) {
+		this.modifiedBy = modifiedBy;
 	}
+
 	public String getUpdateDetails() {
 		return updateDetails;
 	}
-	public void setDetails(String details) {
-		this.updateDetails = details;
+
+	public void setUpdateDetails(String updateDetails) {
+		this.updateDetails = updateDetails;
 	}
-	public String getModifiedDate() {
+
+	public Date getModifiedDate() {
 		return modifiedDate;
 	}
-	public void setModifiedDate(String modifiedDate) {
+
+	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
+
 }
