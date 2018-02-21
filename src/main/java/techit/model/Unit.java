@@ -23,8 +23,8 @@ public class Unit implements Serializable{
 	@Column(nullable = false)
 	private String name; // name of the department
 
-	@OneToMany(mappedBy = "unit")
-	private List<User> supervisors;
+//	@OneToMany(mappedBy = "unit")
+//	private List<User> supervisors;
 
 	public Long getId() {
 		return id;
@@ -42,12 +42,12 @@ public class Unit implements Serializable{
 		this.name = name;
 	}
 
-	public List<User> getSupervisors() {
-		return supervisors;
-	}
-
-	public void setSupervisors(List<User> supervisors) {
-		this.supervisors = supervisors;
-	}
+//	public List<User> getSupervisors() {
+//		return supervisors;
+//	}
+//
+//	public void setSupervisors(List<User> supervisors) {
+//		this.supervisors = supervisors;
+//	}
 	
 }

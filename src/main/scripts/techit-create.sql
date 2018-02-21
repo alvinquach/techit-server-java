@@ -1,4 +1,4 @@
-use test;
+use techit2;
 
     create table hibernate_sequence (
        next_val bigint
@@ -87,6 +87,7 @@ use test;
        add constraint FKp2hfld4bhbwtakwrmt4xq6een 
        foreign key (unit_id) 
        references units (id);
+
        
 insert into units values(1, 'cs');
 insert into units values(2, 'me');
