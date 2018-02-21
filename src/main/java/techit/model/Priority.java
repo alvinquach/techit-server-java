@@ -1,33 +1,20 @@
 package techit.model;
 
 public enum Priority {
-	NA(0), LOW(1), MEDIUM(2), HIGH(3);
-	private int priority;
+	
+	NA		("NOT ASSIGNED"),
+	LOW		("LOW"),
+	MEDIUM	("MEDIUM"),
+	HIGH	("HIGH");
+	
+	private String priorityValue;
 
-	Priority(int priority){
-		this.priority = priority;
+	Priority(String priorityValue) {
+		this.priorityValue = priorityValue;
+	};
+	
+	public String getPriorityValue() {
+		return priorityValue;
 	}
 
-	public String getPriorityValue(){
-		String priority = "";
-		switch(this.priority){
-		case 0:
-			priority = "NOT ASSIGNED";
-			break;
-		case 1:
-			priority = "LOW";
-			break;
-		case 2:
-			priority = "MEDIUM";
-			break;
-		case 3:
-			priority = "HIGH";
-			break;
-		}
-		return priority;
-	}
-
-	public int getPriorityNumericValue(){
-		return this.priority;
-	}
 }
