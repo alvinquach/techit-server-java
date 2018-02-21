@@ -8,8 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -20,77 +20,73 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 @Table(name = "users")
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
-    private Long id;
+	@Id
+	@GeneratedValue
+	private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
+	@Column(nullable = false, unique = true)
+	private String username;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @Column(nullable = false)
-    private String password;
+	@JsonProperty(access = Access.WRITE_ONLY)
+	@Column(nullable = false)
+	private String password;
 
-    private boolean enabled = true;
-    
-    @Column(nullable = false)
-    private String firstName;
-    
-    @Column(nullable = false)
-    private String lastName;
-    
+	private Boolean enabled = true;
+
+	@Column(nullable = false)
+	private String firstName;
+
+	@Column(nullable = false)
+	private String lastName;
+
 	private String email;
-    private String phoneNumber;
-    
-    @OneToMany(mappedBy = "requester")
-    private List<Ticket> tickets; // regarding requesters specifically
-    
-    @Enumerated
+
+	private String phoneNumber;
+
+	private String department;
+
+	@OneToMany(mappedBy = "requester")
+	private List<Ticket> tickets; // regarding requesters specifically
+
+	@Enumerated
 	private Position status;
-    
-    @ManyToOne
-    private Unit unit; // unit to which this user belongs to
-    
-    public Unit getUnit() {
-		return unit;
+
+	@ManyToOne
+	@JoinColumn(name="unitId")
+	private Unit unit; // unit to which this user belongs to
+
+	public Long getId() {
+		return id;
 	}
 
-	public void setUnit(Unit unit) {
-		this.unit = unit;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public List<Ticket> getTickets() {
-		return tickets;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
-	}
-    
-    public String getEmail() {
-		return email;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public String getPassword() {
+		return password;
 	}
 
-	public String getPhoneNumber() {
-		return phoneNumber;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-    
-    public Position getStatus() {
-		return status;
+	public Boolean getEnabled() {
+		return enabled;
 	}
 
-	public void setStatus(Position status) {
-		this.status = status;
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public String getFirstName() {
@@ -109,50 +105,58 @@ public class User implements Serializable {
 		this.lastName = lastName;
 	}
 
-    public Long getId()
-    {
-        return id;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setId( Long id )
-    {
-        this.id = id;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getUsername()
-    {
-        return username;
-    }
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public void setUsername( String username )
-    {
-        this.username = username;
-    }
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public String getPassword()
-    {
-        return password;
-    }
+	public String getDepartment() {
+		return department;
+	}
 
-    public void setPassword( String password )
-    {
-        this.password = password;
-    }
+	public void setDepartment(String department) {
+		this.department = department;
+	}
 
-    public boolean isEnabled()
-    {
-        return enabled;
-    }
+	public List<Ticket> getTickets() {
+		return tickets;
+	}
 
-    public void setEnabled( boolean enabled )
-    {
-        this.enabled = enabled;
-    }
+	public void setTickets(List<Ticket> tickets) {
+		this.tickets = tickets;
+	}
 
-    @Override
-    public String toString()
-    {
-        return "[" + id + ", " + username + ", " + password + "]";
-    }
+	public Position getStatus() {
+		return status;
+	}
+
+	public void setStatus(Position status) {
+		this.status = status;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "[" + id + ", " + username + ", " + password + "]";
+	}
 
 }

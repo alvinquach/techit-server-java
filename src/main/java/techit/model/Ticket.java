@@ -4,24 +4,16 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import javax.persistence.ManyToOne;
-
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 @Table(name = "tickets")
@@ -35,8 +27,8 @@ public class Ticket implements Serializable{
 	@ManyToMany
 	@JoinTable(
 			name = "ticketsXRefUsers", 
-			joinColumns=@JoinColumn(name = "ticket_id"),
-			inverseJoinColumns=@JoinColumn(name="user_id"))
+			joinColumns = @JoinColumn(name = "ticketId"),
+			inverseJoinColumns = @JoinColumn(name = "userId"))
 	private List<User> technicians;	// List of all technicians 
 	
 	@Enumerated
@@ -46,15 +38,24 @@ public class Ticket implements Serializable{
 	private Priority currentPriority; // Importance or level of urgency of the ticket
 	
 	@ManyToOne
+	@JoinColumn(name = "requesterId")
 	private User requester;
 
 	private String subject;			// Subject of the ticket.
+	
 	private String details; 		// Text concerning the project.
+	
 	private Date startDate; 		// Project's starting date.
+	
 	private String startDateTime;	// Time of when the ticket was created.
+	
 	private Date endDate; 			// When the project was completed.
+	
 	private Date lastUpdated;		// Last date where changes were made to the ticket (edits, technician updates, etc.)
+	
+	// DO WE NEED THIS?
 	private String lastUpdatedTime; // Same as lastUpdated but this is for the time changes were made.
+	
 	private String location; 	// Location where the project is.
 	
 	@OneToMany(mappedBy = "ticket")
