@@ -3,6 +3,7 @@ package techit.model;
 import java.io.Serializable;
 import java.sql.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,15 +21,16 @@ public class Update implements Serializable{
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name="ticketId")
+	@JoinColumn(name = "ticketId", nullable = false)
 	private Ticket ticket; // associated ticket
 
 	@ManyToOne
-	@JoinColumn(name="modifiedById")
+	@JoinColumn(name = "modifiedById", nullable = false)
 	private User modifiedBy;
 	
 	private String updateDetails;
 	
+	@Column(nullable = false)
 	private Date modifiedDate;
 
 	public Long getId() {
