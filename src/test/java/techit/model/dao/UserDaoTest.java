@@ -17,7 +17,7 @@ public class UserDaoTest extends AbstractTransactionalTestNGSpringContextTests {
     @Test
     public void getUser()
     {
-        assert userDao.getUser( 1L ).getUsername().equalsIgnoreCase( "admin" );
+        assert userDao.getUser( 5L ).getUsername().equalsIgnoreCase( "admin" );
     }
 
     @Test
@@ -32,6 +32,8 @@ public class UserDaoTest extends AbstractTransactionalTestNGSpringContextTests {
         User user = new User();
         user.setUsername( "Tom" );
         user.setPassword( "abcd" );
+        user.setFirstName("Tom");
+        user.setLastName("Sawyer");
         user = userDao.saveUser( user );
 
         assert user.getId() != null;
