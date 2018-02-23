@@ -33,6 +33,7 @@ public class User implements Serializable {
 	@Column(nullable = false)
 	private String password;
 
+	@Column(nullable = false)
 	private Boolean enabled = true;
 
 	@Column(nullable = false)
@@ -51,7 +52,8 @@ public class User implements Serializable {
 	private List<Ticket> tickets; // regarding requesters specifically
 
 	@Enumerated
-	private Position status;
+	@Column(nullable = false)
+	private Position status = Position.USER;
 
 	@ManyToOne
 	@JoinColumn(name="unitId")

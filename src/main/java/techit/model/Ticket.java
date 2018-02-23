@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -26,19 +27,21 @@ public class Ticket implements Serializable{
 
 	@ManyToMany
 	@JoinTable(
-			name = "ticketsXRefUsers", 
+			name = "tickets_xref_users", 
 			joinColumns = @JoinColumn(name = "ticketId"),
 			inverseJoinColumns = @JoinColumn(name = "userId"))
 	private List<User> technicians;	// List of all technicians 
 	
 	@Enumerated
+	@Column(nullable = false)
 	private Progress currentProgress; // Current progress of the ticket
 	
 	@Enumerated
+	@Column(nullable = false)
 	private Priority currentPriority; // Importance or level of urgency of the ticket
 	
 	@ManyToOne
-	@JoinColumn(name = "requesterId")
+	@JoinColumn(name = "requesterId", nullable = false)
 	private User requester;
 
 	private String subject;			// Subject of the ticket.

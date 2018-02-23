@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import techit.model.Progress;
 import techit.model.Ticket;
+import techit.model.User;
 import techit.model.dao.TicketDao;
 
 
@@ -28,8 +29,8 @@ public class TicketDaoImpl implements TicketDao {
 
 
 	@Override
-	public List<Ticket> getUserTickets(Long requester_id) {
-		 return entityManager.createQuery( "from Ticket t WHERE t.id =:requester order by id", Ticket.class ).setParameter("requester", requester_id)
+	public List<Ticket> getTicketsByUser(User user) {
+		 return entityManager.createQuery( "from Ticket t WHERE t.id =:requester order by id", Ticket.class ).setParameter("requester", user)
 		            .getResultList();
 	}
 
@@ -41,16 +42,9 @@ public class TicketDaoImpl implements TicketDao {
         return entityManager.merge( ticket );
     }
 
-	@Override
-	public void updateTicket(Long id,Progress progress) {
-	Date date = new Date();
-		entityManager.find(Ticket.class , id);
-		 entityManager
-		     .createQuery("update Ticket set Progress = :progress, lastUpdated = :lastupdate where id =:id" )
-		     .setParameter("id", id).setParameter("progress", id).setParameter("lastUpdated", date)
-		     .executeUpdate();
+	
 		
 	}
 
 
-}
+
