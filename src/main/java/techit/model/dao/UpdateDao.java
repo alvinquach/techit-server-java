@@ -6,7 +6,7 @@ import java.util.List;
 import techit.model.Update;
 
 public interface UpdateDao {
-    Update getUpdate (Integer l );
+    Update getUpdate (long l );
 
     List<Update> getUpdate();
 
