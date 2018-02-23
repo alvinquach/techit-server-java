@@ -21,9 +21,9 @@ public class UpdateDaoImpl implements UpdateDao {
 	
 	
 	@Override
-	public Update getUpdate(Integer Id) {
+	public Update getUpdate(long l) {
 
-		return entityManager.find( Update.class, Id );
+		return entityManager.find( Update.class, l );
 	}
 
 
@@ -41,4 +41,8 @@ public class UpdateDaoImpl implements UpdateDao {
         return entityManager.merge( update );
     }
 
+ 
+
 }
+
+
