@@ -14,7 +14,7 @@ public interface TicketDao {
     
     Ticket saveTicket( Ticket ticket );
     
-    void updateTicket( Long id ,Progress progress);
+   
 
 	
 
