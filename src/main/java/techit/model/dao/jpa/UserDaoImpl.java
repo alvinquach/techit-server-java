@@ -44,8 +44,8 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getUsersByUnit(Unit unit) {
-		return entityManager.createQuery("from User where unitId = :unitId", User.class)
-				.setParameter("unitId", unit.getId())
+		return entityManager.createQuery("from User where unit = :unit", User.class)
+				.setParameter("unit", unit)
 				.getResultList();
 	}
 
