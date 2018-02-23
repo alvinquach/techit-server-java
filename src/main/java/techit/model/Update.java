@@ -32,6 +32,19 @@ public class Update implements Serializable{
 	
 	@Column(nullable = false)
 	private Date modifiedDate;
+	
+	public Update(){
+		
+	}
+
+	public Update(Long id, Ticket ticket, User modifiedBy, String updateDetails, Date modifiedDate) {
+		super();
+		this.id = id;
+		this.ticket = ticket;
+		this.modifiedBy = modifiedBy;
+		this.updateDetails = updateDetails;
+		this.modifiedDate = modifiedDate;
+	}
 
 	public Long getId() {
 		return id;

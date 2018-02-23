@@ -32,22 +32,20 @@ public class UpdateDaoTest extends AbstractTransactionalTestNGSpringContextTests
 		assert updateDao.getUpdate(1L).getId().toString().equals("1");
 	}
 
-//	@Test
-//    public void saveUpdate(){
-//	  	Ticket ticket = new Ticket();
-//		User ticketUser = new User();
-//		Update update = new Update();
-//		
-//	  	ticket = ticketDao.getTicket( (long) 1 );
-//		String string_date = "2019-11-11";
-//	  	update.setModifiedDate(java.sql.Date.valueOf(string_date));
-//	  	update.setUpdateDetails("Fixed Persistence and Hibernate...");
-//	  	ticketUser = ticket.getRequester();
-//	  
-//
-//		update.setModifiedBy(ticketUser);
-//	  	update = updateDao.saveUpdate(update);
-//		assert update.getId() != null;
-//	  } 
-//	
+	
+	
+	
+	@Test
+    public void saveUpdate(){
+	  	Ticket ticket = new Ticket();
+		User ticketUser = new User();
+	  	ticket = ticketDao.getTicket( (long) 1 );
+		String string_date = "2019-11-11";
+	  	ticketUser = ticket.getRequester();
+
+	  	Update update = new Update( ticket.getId(),ticket,  ticketUser,  "Fixed Persistence and Hibernate...",  java.sql.Date.valueOf(string_date));
+	  	update = updateDao.saveUpdate(update);
+		assert update.getId() != null;
+	  } 
+	
 }

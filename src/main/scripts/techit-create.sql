@@ -122,3 +122,9 @@ Values(2,'completionDetails2',2,2,'details2','2017-09-22','2017-09-22','lastUpda
 
 INSERT INTO tickets 
 Values(3,'completionDetails3',2,2,'details3','2018-01-22','2018-01-22','lastUpdatedTime2','Location3','2018-01-22','startDateTime3','subject3',2);
+
+
+INSERT INTO `techit2`.`updates` (`id`, `modifiedDate`, `updateDetails`, `modifiedById`, `ticketId`) VALUES ('3', '2017-01-13', 'details of stuff', '2', '2');
+
+
+

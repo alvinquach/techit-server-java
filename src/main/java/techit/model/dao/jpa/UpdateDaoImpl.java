@@ -33,15 +33,12 @@ public class UpdateDaoImpl implements UpdateDao {
 	                .getResultList();
 	}
     
-
     @Override
     @Transactional
     public Update saveUpdate( Update update )
     {
         return entityManager.merge( update );
     }
-
- 
 
 }
 
