@@ -42,16 +42,9 @@ public class TicketDaoImpl implements TicketDao {
         return entityManager.merge( ticket );
     }
 
-	@Override
-	public void updateTicket(Long id,Progress progress) {
-	Date date = new Date();
-		entityManager.find(Ticket.class , id);
-		 entityManager
-		     .createQuery("update Ticket set Progress = :progress, lastUpdated = :lastupdate where id =:id" )
-		     .setParameter("id", id).setParameter("progress", id).setParameter("lastUpdated", date)
-		     .executeUpdate();
+	
 		
 	}
 
 
-}
+
