@@ -25,13 +25,13 @@ use techit2;
         startDate date,
         startDateTime varchar(255),
         subject varchar(255),
-        requester_id bigint,
+        requesterId bigint,
         primary key (id)
     ) engine=InnoDB;
 
-    create table ticketsXRefUsers (
-       ticket_id bigint not null,
-        user_id bigint not null
+    create table tickets_xref_users (
+       ticketId bigint not null,
+        userId bigint not null
     ) engine=InnoDB;
 
     create table units (
@@ -41,22 +41,26 @@ use techit2;
     ) engine=InnoDB;
 
     create table updates (
-       id integer not null,
-        ticket_id bigint,
+       id bigint not null,
+        modifiedDate date,
+        updateDetails varchar(255),
+        modifiedById bigint,
+        ticketId bigint,
         primary key (id)
     ) engine=InnoDB;
 
     create table users (
        id bigint not null,
+        department varchar(255),
         email varchar(255),
-        enabled bit not null,
+        enabled bit,
         firstName varchar(255) not null,
         lastName varchar(255) not null,
         password varchar(255) not null,
         phoneNumber varchar(255),
         status integer,
         username varchar(255) not null,
-        unit_id bigint,
+        unitId bigint,
         primary key (id)
     ) engine=InnoDB;
 
@@ -64,30 +68,34 @@ use techit2;
        add constraint UK_r43af9ap4edm43mmtq01oddj6 unique (username);
 
     alter table tickets 
-       add constraint FKdp5i1hou98n2co3e49fffh9fp 
-       foreign key (requester_id) 
+       add constraint FK2ibmglwc67bynljpqydbaej4e 
+       foreign key (requesterId) 
        references users (id);
 
-    alter table ticketsXRefUsers 
-       add constraint FKmhfam8q9lwdwrgpm7n987pinr 
-       foreign key (user_id) 
+    alter table tickets_xref_users 
+       add constraint FK9ni8cyqa5kr1wtpdg6xtla7o5 
+       foreign key (userId) 
        references users (id);
 
-    alter table ticketsXRefUsers 
-       add constraint FKe0ouvikera975nv1gyjb3vq67 
-       foreign key (ticket_id) 
+    alter table tickets_xref_users 
+       add constraint FKp59p9e6jhd42tsyasxqup7d38 
+       foreign key (ticketId) 
        references tickets (id);
 
     alter table updates 
-       add constraint FK3fnl74oyd1raon25v5lo3hyag 
-       foreign key (ticket_id) 
+       add constraint FKdys2c21lpn507ur3r8gk8n0h5 
+       foreign key (modifiedById) 
+       references users (id);
+
+    alter table updates 
+       add constraint FKjl7d0xf7smhs4oib7otx250w0 
+       foreign key (ticketId) 
        references tickets (id);
 
     alter table users 
-       add constraint FKp2hfld4bhbwtakwrmt4xq6een 
-       foreign key (unit_id) 
+       add constraint FK1gdvehntuq847hrr9m2y6csln 
+       foreign key (unitId) 
        references units (id);
-
        
 insert into units values(1, 'cs');
 insert into units values(2, 'me');
