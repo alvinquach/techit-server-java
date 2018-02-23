@@ -15,8 +15,8 @@ use techit2;
     create table tickets (
        id bigint not null,
         completionDetails varchar(255),
-        currentPriority integer,
-        currentProgress integer,
+        currentPriority integer not null,
+        currentProgress integer not null,
         details varchar(255),
         endDate date,
         lastUpdated date,
@@ -25,7 +25,7 @@ use techit2;
         startDate date,
         startDateTime varchar(255),
         subject varchar(255),
-        requesterId bigint,
+        requesterId bigint not null,
         primary key (id)
     ) engine=InnoDB;
 
@@ -42,10 +42,10 @@ use techit2;
 
     create table updates (
        id bigint not null,
-        modifiedDate date,
+        modifiedDate date not null,
         updateDetails varchar(255),
-        modifiedById bigint,
-        ticketId bigint,
+        modifiedById bigint not null,
+        ticketId bigint not null,
         primary key (id)
     ) engine=InnoDB;
 
@@ -53,12 +53,12 @@ use techit2;
        id bigint not null,
         department varchar(255),
         email varchar(255),
-        enabled bit,
+        enabled bit not null,
         firstName varchar(255) not null,
         lastName varchar(255) not null,
         password varchar(255) not null,
         phoneNumber varchar(255),
-        status integer,
+        status integer not null,
         username varchar(255) not null,
         unitId bigint,
         primary key (id)
@@ -100,11 +100,11 @@ use techit2;
 insert into units values(1, 'cs');
 insert into units values(2, 'me');
 
-insert into users values (1, 'test@calstatela.edu',1, 'Andrew', 'Garcia', sha2('abcd', 256),
+insert into users values (1, 'Test', 'test@calstatela.edu',1, 'Andrew', 'Garcia', sha2('abcd', 256),
 '323-224-5678', 3, 'amgarcia', 1);
 
-insert into users values (2, 'test@gmail.com',1, 'Rick', 'Sanchez', sha2('hello', 256),
+insert into users values (2, 'Test', 'test@gmail.com',1, 'Rick', 'Sanchez', sha2('hello', 256),
 '626-234-9999', 1, 'rsanchez', 1);
 
-insert into users values (3, 'hello@gmail.com',1, 'Morty', 'Sanchez', sha2('test', 256),
+insert into users values (3, 'Test', 'hello@gmail.com',1, 'Morty', 'Sanchez', sha2('test', 256),
 '562-234-9876', 2, 'msanchez', 1);
