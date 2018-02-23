@@ -1,5 +1,7 @@
 package techit.model.dao;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
@@ -46,9 +48,27 @@ public class UserDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 	
 	@Test
 	public void getUsersByUnit() {
+		
+		// Create a unit for querying.
 		Unit unit = new Unit();
 		unit.setId(1L);
-		assert userDao.getUsersByUnit(unit).size() >= 2;
+		
+		// Query for the users.
+		List<User> users = userDao.getUsersByUnit(unit);
+		
+		// There should be at least 3 users in the unit, which were added by the sql create script.
+		if (users.size() < 3) {
+			assert false;
+		}
+		
+		// Check if the unit's ID in each of the users match that of the queried unit.
+		for (User user : users) {
+			if (user.getUnit() == null || user.getUnit().getId() != unit.getId()) {
+				assert false;
+			}
+		}
+		
+		assert true;
 	}
 	
 }
