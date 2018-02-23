@@ -26,7 +26,7 @@ public class Ticket implements Serializable{
 
 	@ManyToMany
 	@JoinTable(
-			name = "ticketsXRefUsers", 
+			name = "tickets_xref_users", 
 			joinColumns = @JoinColumn(name = "ticketId"),
 			inverseJoinColumns = @JoinColumn(name = "userId"))
 	private List<User> technicians;	// List of all technicians 
