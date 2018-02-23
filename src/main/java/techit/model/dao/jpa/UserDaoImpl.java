@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import techit.model.Unit;
 import techit.model.User;
 import techit.model.dao.UserDao;
 
@@ -39,6 +40,13 @@ public class UserDaoImpl implements UserDao {
 	@Transactional
 	public User saveUser(User user) {
 		return entityManager.merge(user);
+	}
+
+	@Override
+	public List<User> getUsersByUnit(Unit unit) {
+		return entityManager.createQuery("from User where unitId = :unitId", User.class)
+				.setParameter("unitId", unit.getId())
+				.getResultList();
 	}
 
 }
