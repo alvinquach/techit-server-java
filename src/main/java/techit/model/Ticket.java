@@ -18,8 +18,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tickets")
-public class Ticket implements Serializable{
-	//private static final long serialVersionUID = 1L;
+public class Ticket implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue
@@ -31,41 +32,41 @@ public class Ticket implements Serializable{
 			joinColumns = @JoinColumn(name = "ticketId"),
 			inverseJoinColumns = @JoinColumn(name = "userId"))
 	private List<User> technicians;	// List of all technicians 
-	
+
 	@Enumerated
 	@Column(nullable = false)
 	private Progress currentProgress; // Current progress of the ticket
-	
+
 	@Enumerated
 	@Column(nullable = false)
 	private Priority currentPriority; // Importance or level of urgency of the ticket
-	
+
 	@ManyToOne
 	@JoinColumn(name = "requesterId", nullable = false)
 	private User requester;
 
 	private String subject;			// Subject of the ticket.
-	
+
 	private String details; 		// Text concerning the project.
-	
+
 	private Date startDate; 		// Project's starting date.
-	
+
 	private String startDateTime;	// Time of when the ticket was created.
-	
+
 	private Date endDate; 			// When the project was completed.
-	
+
 	private Date lastUpdated;		// Last date where changes were made to the ticket (edits, technician updates, etc.)
-	
+
 	// DO WE NEED THIS?
 	private String lastUpdatedTime; // Same as lastUpdated but this is for the time changes were made.
-	
+
 	private String location; 	// Location where the project is.
-	
+
 	@OneToMany(mappedBy = "ticket")
 	private List<Update> updates;	// List of all updates that was made to the ticket.
 
 	private String completionDetails; // Information pertaining vendors, cost,
-										// materials used.
+	// materials used.
 
 	public Long getId() {
 		return id;
