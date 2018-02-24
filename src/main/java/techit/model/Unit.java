@@ -12,26 +12,13 @@ import javax.persistence.Table;
 @Table(name = "units")
 public class Unit implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String name; // name of the department
-
-	
-public Unit(Long id, String name) {
-		super();
-		this.id = id;
-		this.name = name;
-	}
-
-public Unit(){
-	
-}
-//	@OneToMany(mappedBy = "unit")
-//	private List<User> supervisors;
 
 	public Long getId() {
 		return id;
@@ -49,12 +36,4 @@ public Unit(){
 		this.name = name;
 	}
 
-//	public List<User> getSupervisors() {
-//		return supervisors;
-//	}
-//
-//	public void setSupervisors(List<User> supervisors) {
-//		this.supervisors = supervisors;
-//	}
-	
 }
