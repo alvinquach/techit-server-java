@@ -20,6 +20,16 @@ public class Unit implements Serializable{
 	@Column(nullable = false)
 	private String name; // name of the department
 
+	
+public Unit(Long id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
+public Unit(){
+	
+}
 //	@OneToMany(mappedBy = "unit")
 //	private List<User> supervisors;
 
