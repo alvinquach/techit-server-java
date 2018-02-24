@@ -1,18 +1,11 @@
  package techit.model.dao;
 
-import java.util.List;
-
-
 import techit.model.Update;
 
 public interface UpdateDao {
-    Update getUpdate (long l );
+	
+    Update getUpdate(Long id);
 
-    List<Update> getUpdate();
-
-    Update saveUpdate( Update update );
-    
-    
+    Update saveUpdate(Update update);
     
 }
-
