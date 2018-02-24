@@ -7,14 +7,10 @@ import techit.model.User;
 
 public interface TicketDao {
 
-    Ticket getTicket( Long id );
+	Ticket getTicket( Long id );
 
-    Ticket saveTicket( Ticket ticket );
+	Ticket saveTicket( Ticket ticket );
 
 	List<Ticket> getTicketsByUser(User user);
-		
-   
-
-	
 
 }
