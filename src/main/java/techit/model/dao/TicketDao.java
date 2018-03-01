@@ -3,6 +3,7 @@ package techit.model.dao;
 import java.util.List;
 
 import techit.model.Ticket;
+import techit.model.Unit;
 import techit.model.User;
 
 public interface TicketDao {
@@ -12,5 +13,7 @@ public interface TicketDao {
 	Ticket saveTicket(Ticket ticket);
 	
 	List<Ticket> getTicketsByRequestor(User user);
+	
+	List<Ticket> getTicketsByUnit(Unit unit);
 
 }

@@ -62,6 +62,10 @@ public class Ticket implements Serializable {
 
 	private String location; 	// Location where the project is.
 
+	@ManyToOne 
+	@JoinColumn(name="unitId") 
+	private Unit unit;        // The unit that was assigned to the ticket. 
+
 	@OneToMany(mappedBy = "ticket")
 	private List<Update> updates;	// List of all updates that was made to the ticket.
 
@@ -170,6 +174,14 @@ public class Ticket implements Serializable {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	public List<Update> getUpdates() {
