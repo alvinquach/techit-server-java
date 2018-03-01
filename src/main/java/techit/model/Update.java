@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -28,6 +29,7 @@ public class Update implements Serializable{
 	@JoinColumn(name = "modifiedById", nullable = false)
 	private User modifiedBy;
 	
+	@Lob
 	private String updateDetails;
 	
 	@Column(nullable = false)

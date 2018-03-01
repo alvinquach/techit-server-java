@@ -1,7 +1,6 @@
 package techit.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,12 +46,9 @@ public class User implements Serializable {
 
 	private String department;
 
-	@OneToMany(mappedBy = "requester")
-	private List<Ticket> tickets; // regarding requesters specifically
-
 	@Enumerated
 	@Column(nullable = false)
-	private Position status = Position.USER;
+	private Position position = Position.USER;
 
 	@ManyToOne
 	@JoinColumn(name="unitId")
@@ -131,20 +126,12 @@ public class User implements Serializable {
 		this.department = department;
 	}
 
-	public List<Ticket> getTickets() {
-		return tickets;
+	public Position getPosition() {
+		return position;
 	}
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
-	}
-
-	public Position getStatus() {
-		return status;
-	}
-
-	public void setStatus(Position status) {
-		this.status = status;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 	public Unit getUnit() {

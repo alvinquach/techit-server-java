@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -42,11 +43,12 @@ public class Ticket implements Serializable {
 	private Priority currentPriority; // Importance or level of urgency of the ticket
 
 	@ManyToOne
-	@JoinColumn(name = "requesterId", nullable = false)
-	private User requester;
+	@JoinColumn(name = "requestorId", nullable = false)
+	private User requestor;
 
 	private String subject;			// Subject of the ticket.
 
+	@Lob
 	private String details; 		// Text concerning the project.
 
 	private Date startDate; 		// Project's starting date.
@@ -62,9 +64,14 @@ public class Ticket implements Serializable {
 
 	private String location; 	// Location where the project is.
 
+	@ManyToOne 
+	@JoinColumn(name="unitId") 
+	private Unit unit;        // The unit that was assigned to the ticket. 
+
 	@OneToMany(mappedBy = "ticket")
 	private List<Update> updates;	// List of all updates that was made to the ticket.
 
+	@Lob
 	private String completionDetails; // Information pertaining vendors, cost,
 	// materials used.
 
@@ -100,12 +107,12 @@ public class Ticket implements Serializable {
 		this.currentPriority = currentPriority;
 	}
 
-	public User getRequester() {
-		return requester;
+	public User getRequestor() {
+		return requestor;
 	}
 
-	public void setRequester(User requester) {
-		this.requester = requester;
+	public void setRequestor(User requestor) {
+		this.requestor = requestor;
 	}
 
 	public String getSubject() {
@@ -170,6 +177,14 @@ public class Ticket implements Serializable {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	public List<Update> getUpdates() {

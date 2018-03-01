@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import techit.model.Ticket;
+import techit.model.Unit;
 import techit.model.User;
 import techit.model.dao.TicketDao;
 
@@ -25,8 +26,8 @@ public class TicketDaoImpl implements TicketDao {
 	}
 
 	@Override
-	public List<Ticket> getTicketsByUser(User user) {
-		return entityManager.createQuery("from Ticket where requester = :requester", Ticket.class)
+	public List<Ticket> getTicketsByRequestor(User user) {
+		return entityManager.createQuery("from Ticket where requestor = :requestor", Ticket.class)
 				.setParameter("requester", user)
 				.getResultList();
 	}
@@ -35,6 +36,13 @@ public class TicketDaoImpl implements TicketDao {
 	@Transactional
 	public Ticket saveTicket(Ticket ticket) {
 		return entityManager.merge(ticket);
+	}
+
+	@Override
+	public List<Ticket> getTicketsByUnit(Unit unit) {
+		return entityManager.createQuery("from Ticket where unit = :unit", Ticket.class)
+				.setParameter("unit", unit)
+				.getResultList();
 	}
 
 }

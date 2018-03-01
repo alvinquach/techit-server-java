@@ -21,18 +21,18 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 
     @Test
     public void getTicket() {
-        assert ticketDao.getTicket(1L).getRequester().getId() == 1L;
+        assert ticketDao.getTicket(1L).getRequestor().getId() == 1L;
     }
 
     @Test
-    public void getTicketsByUser() {
+    public void getTicketsByRequestor() {
     	
     	// Create a user for querying.
     	User user = new User();
     	user.setId(2L);
     	
     	// Query for the tickets.
-		List<Ticket> tickets = ticketDao.getTicketsByUser(user);
+		List<Ticket> tickets = ticketDao.getTicketsByRequestor(user);
 		
 		// There should be at least 2 tickets requested by user 2, which were added by the sql create script.
 		if (tickets.size() < 2) {
@@ -41,7 +41,7 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 				
 		// Check if the users's ID in each of the tickets match that of the queried user.
 		for (Ticket ticket : tickets) {
-			if (ticket.getRequester() == null || ticket.getRequester().getId() != user.getId()) {
+			if (ticket.getRequestor() == null || ticket.getRequestor().getId() != user.getId()) {
 				assert false;
 			}
 		}
@@ -57,7 +57,7 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
     	Ticket ticket = new Ticket();
         ticket.setCurrentPriority(Priority.NA);
         ticket.setCurrentProgress(Progress.ONHOLD);
-        ticket.setRequester(user);
+        ticket.setRequestor(user);
         
         ticket = ticketDao.saveTicket(ticket);
         
