@@ -42,8 +42,8 @@ public class Ticket implements Serializable {
 	private Priority currentPriority; // Importance or level of urgency of the ticket
 
 	@ManyToOne
-	@JoinColumn(name = "requesterId", nullable = false)
-	private User requester;
+	@JoinColumn(name = "requestorId", nullable = false)
+	private User requestor;
 
 	private String subject;			// Subject of the ticket.
 
@@ -100,12 +100,12 @@ public class Ticket implements Serializable {
 		this.currentPriority = currentPriority;
 	}
 
-	public User getRequester() {
-		return requester;
+	public User getRequestor() {
+		return requestor;
 	}
 
-	public void setRequester(User requester) {
-		this.requester = requester;
+	public void setRequestor(User requestor) {
+		this.requestor = requestor;
 	}
 
 	public String getSubject() {
