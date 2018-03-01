@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -47,6 +48,7 @@ public class Ticket implements Serializable {
 
 	private String subject;			// Subject of the ticket.
 
+	@Lob
 	private String details; 		// Text concerning the project.
 
 	private Date startDate; 		// Project's starting date.
@@ -69,6 +71,7 @@ public class Ticket implements Serializable {
 	@OneToMany(mappedBy = "ticket")
 	private List<Update> updates;	// List of all updates that was made to the ticket.
 
+	@Lob
 	private String completionDetails; // Information pertaining vendors, cost,
 	// materials used.
 

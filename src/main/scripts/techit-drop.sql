@@ -1,3 +1,5 @@
+use techit2;
+
 drop table tickets_xref_users;
 drop table updates;
 drop table tickets;
