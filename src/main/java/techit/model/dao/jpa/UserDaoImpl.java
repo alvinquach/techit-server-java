@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import techit.model.Position;
 import techit.model.Unit;
 import techit.model.User;
 import techit.model.dao.UserDao;
@@ -47,6 +48,24 @@ public class UserDaoImpl implements UserDao {
 		return entityManager.createQuery("from User where unit = :unit", User.class)
 				.setParameter("unit", unit)
 				.getResultList();
+	}
+
+	@Override
+	public List<User> getUsersByUnitAndPosition(Unit unit, Position position) {
+		return entityManager.createQuery("from User where unit = :unit and position = :position", User.class)
+				.setParameter("unit", unit)
+				.setParameter("position", position)
+				.getResultList();
+	}
+
+	@Override
+	public List<User> getTechniciansByUnit(Unit unit) {
+		return getUsersByUnitAndPosition(unit, Position.TECHNICIAN);
+	}
+
+	@Override
+	public List<User> getSupervisorsByUnit(Unit unit) {
+		return getUsersByUnitAndPosition(unit, Position.SUPERVISING_TECHNICIAN);
 	}
 
 }
