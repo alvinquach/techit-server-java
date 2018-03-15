@@ -110,7 +110,8 @@ insert into users values (1, 'Test', 'test@calstatela.edu', 1, 'Andrew', 'Garcia
 insert into users values (2, 'Test', 'test@gmail.com', 1, 'Rick', 'Sanchez', sha2('password', 256), '626-234-9999', 1, 'rsanchez', 1);
 insert into users values (3, 'Test', 'hello@gmail.com', 1, 'Morty', 'Sanchez', sha2('password', 256), '562-234-9876', 2, 'msanchez', 1);
 insert into users values (4, 'Test', 'mshakibi@techit.com', 1, 'mahdi', 'shakibi', sha2('password', 256), '626-417-3378', 2, 'mshakibi', 1);
-insert into users values (5, 'Test', 'admin@techit.com', 1, 'Local', 'Admin', sha2('password', 256), '222-222-2222', 2, 'admin', 1);
+insert into users values (5, 'Test', 'admin@techit.com', 1, 'Local', 'Admin', sha2('password', 256), '222-222-2222', 0, 'admin', 1);
+insert into users values (6, 'Test', 'technician2@techit.com', 1, 'joe', 'cota', sha2('password', 256), '333-333-3333', 2, 'jcota', 1);
 
 
 insert into tickets values (1, 'completionDetails', 1, 1, 'details', '2009-09-22', '2009-09-22', 'lastUpdatedTime', 'location:', '2009-09-22', 'startDateTime', 'subject', 1, 1);

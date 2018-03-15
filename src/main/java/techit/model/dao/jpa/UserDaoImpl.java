@@ -60,12 +60,20 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getTechniciansByUnit(Unit unit) {
-		return getUsersByUnitAndPosition(unit, Position.TECHNICIAN);
+		return entityManager.createQuery("from User where unit = :unit and position = :position", User.class)
+				.setParameter("unit", unit)
+				.setParameter("position", Position.TECHNICIAN)
+				.getResultList();
+		
 	}
 
 	@Override
 	public List<User> getSupervisorsByUnit(Unit unit) {
-		return getUsersByUnitAndPosition(unit, Position.SUPERVISING_TECHNICIAN);
+		return entityManager.createQuery("from User where unit = :unit and position = :position", User.class)
+				.setParameter("unit", unit)
+				.setParameter("position", Position.SUPERVISING_TECHNICIAN)
+				.getResultList();
+		
 	}
 
 }

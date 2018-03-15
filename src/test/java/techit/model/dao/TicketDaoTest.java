@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import techit.model.Priority;
 import techit.model.Progress;
 import techit.model.Ticket;
+import techit.model.Unit;
 import techit.model.User;
 
 @Test(groups = "TicketDaoTest")
@@ -23,7 +24,7 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
     public void getTicket() {
         assert ticketDao.getTicket(1L).getRequestor().getId() == 1L;
     }
-
+    
     @Test
     public void getTicketsByRequestor() {
     	
@@ -62,5 +63,29 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
         ticket = ticketDao.saveTicket(ticket);
         
         assert ticket.getId() != null;
+    }
+    
+
+    @Test
+    public void getTicketsByUnit() {
+    	Unit unit = new Unit();
+    	unit.setId(1L);
+    	
+    	// Query for the tickets.
+    			List<Ticket> tickets = ticketDao.getTicketsByUnit(unit);
+    			
+    			// There should be at least 2 tickets requested by user 2, which were added by the sql create script.
+    			if (tickets.size() < 2) {
+    				assert false;
+    			}
+    					
+    			// Check if the users's ID in each of the tickets match that of the queried user.
+    			for (Ticket ticket : tickets) {
+    				if (ticket.getUnit() == null || ticket.getUnit().getId() != unit.getId()) {
+    					assert false;
+    				}
+    			}
+    	    	
+    	        assert true;
     }
 }

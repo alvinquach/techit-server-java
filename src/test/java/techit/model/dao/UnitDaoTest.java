@@ -18,6 +18,11 @@ public class UnitDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 	public void getUnit() {
 		assert unitDao.getUnit(1L).getId() == 1L;
 	}
+	
+	@Test
+	public void getUnits() {
+		assert unitDao.getUnits().size()>1;
+	}
 
 	@Test
 	public void saveUnit() {
