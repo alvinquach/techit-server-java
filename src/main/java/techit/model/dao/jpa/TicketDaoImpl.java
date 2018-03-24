@@ -31,6 +31,15 @@ public class TicketDaoImpl implements TicketDao {
 				.setParameter("requestor", user)
 				.getResultList();
 	}
+	@Override
+	public List<Ticket> getTechnicianTickets(User technician) {
+		String query = "select t from Ticket t join t.tickets_xref_users tt "
+	            + "where tt = :technician";
+
+	        return entityManager.createQuery( query, Ticket.class )
+	            .setParameter( "technician", technician )
+	            .getResultList();
+	}
 
 	@Override
 	@Transactional
@@ -42,6 +51,13 @@ public class TicketDaoImpl implements TicketDao {
 	public List<Ticket> getTicketsByUnit(Unit unit) {
 		return entityManager.createQuery("from Ticket where unit = :unit", Ticket.class)
 				.setParameter("unit", unit)
+				.getResultList();
+	}
+
+	@Override
+	public List<Ticket> getTickes() {
+		
+		 return entityManager.createQuery("from Ticket order by id", Ticket.class)
 				.getResultList();
 	}
 

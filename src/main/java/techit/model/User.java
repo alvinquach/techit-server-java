@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -26,6 +28,10 @@ public class User implements Serializable {
 
 	@Column(nullable = false, unique = true)
 	private String username;
+
+    @JsonProperty(access = Access.WRITE_ONLY)
+    @Column(nullable = false)
+    private String hash;
 
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@Column(nullable = false)
@@ -146,6 +152,14 @@ public class User implements Serializable {
 	public String toString()
 	{
 		return "[" + id + ", " + username + ", " + password + "]";
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 
 }
