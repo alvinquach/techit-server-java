@@ -8,7 +8,7 @@
     create table users (
        id bigint not null,
         enabled bit not null,
-        password varchar(255) not null,
+        hash varchar(255) not null,
         username varchar(255) not null,
         primary key (id)
     ) engine=InnoDB;

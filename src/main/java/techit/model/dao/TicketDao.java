@@ -16,4 +16,8 @@ public interface TicketDao {
 	
 	List<Ticket> getTicketsByUnit(Unit unit);
 
+	List<Ticket> getTickes();
+
+	List<Ticket> getTechnicianTickets(User user);
+
 }

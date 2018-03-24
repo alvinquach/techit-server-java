@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "tickets")
 public class Ticket implements Serializable {
@@ -26,7 +28,8 @@ public class Ticket implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
-
+	
+	@JsonIgnore
 	@ManyToMany
 	@JoinTable(
 			name = "tickets_xref_users", 
@@ -67,7 +70,8 @@ public class Ticket implements Serializable {
 	@ManyToOne 
 	@JoinColumn(name="unitId") 
 	private Unit unit;        // The unit that was assigned to the ticket. 
-
+	
+	@JsonIgnore
 	@OneToMany(mappedBy = "ticket")
 	private List<Update> updates;	// List of all updates that was made to the ticket.
 
