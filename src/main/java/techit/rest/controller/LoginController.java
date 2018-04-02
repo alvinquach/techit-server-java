@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import techit.jwt.Token;
+import techit.authentication.Token;
 import techit.model.User;
 import techit.model.dao.UserDao;
 import techit.rest.error.RestException;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import techit.jwt.Token;
+import techit.authentication.Token;
 import techit.model.Ticket;
 import techit.model.User;
 import techit.model.dao.TicketDao;

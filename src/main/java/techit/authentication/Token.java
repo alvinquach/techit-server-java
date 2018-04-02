@@ -1,4 +1,4 @@
-package techit.jwt;
+package techit.authentication;
 
 public class Token {
 	    

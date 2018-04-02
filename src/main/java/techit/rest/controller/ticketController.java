@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import techit.jwt.Token;
+import techit.authentication.Token;
 import techit.model.Priority;
 import techit.model.Progress;
 import techit.model.Ticket;
