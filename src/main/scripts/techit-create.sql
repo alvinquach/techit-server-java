@@ -6,12 +6,6 @@ use techit2;
 
     insert into hibernate_sequence values ( 1 );
 
-    insert into hibernate_sequence values ( 1 );
-
-    insert into hibernate_sequence values ( 1 );
-
-    insert into hibernate_sequence values ( 1 );
-
     create table tickets (
        id bigint not null,
         completionDetails longtext,
@@ -56,8 +50,8 @@ use techit2;
         email varchar(255),
         enabled bit not null,
         firstName varchar(255) not null,
+        hash varchar(60) not null,
         lastName varchar(255) not null,
-        hash varchar(255) not null,
         phoneNumber varchar(255),
         position integer not null,
         username varchar(255) not null,
@@ -102,30 +96,3 @@ use techit2;
        add constraint FK1gdvehntuq847hrr9m2y6csln 
        foreign key (unitId) 
        references units (id);
-       
-insert into units values (1, 'cs');
-insert into units values (2, 'me');
-
-insert into users values (1, 'Test', 'test@calstatela.edu', 1, 'Andrew', 'Garcia', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '323-224-5678', 3, 'amgarcia', 1);
-insert into users values (2, 'Test', 'test@gmail.com', 1, 'Rick', 'Sanchez', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '626-234-9999', 1, 'rsanchez', 1);
-insert into users values (3, 'Test', 'hello@gmail.com', 1, 'Morty', 'Sanchez', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '562-234-9876', 2, 'msanchez', 1);
-insert into users values (4, 'Test', 'mshakibi@techit.com', 1, 'mahdi', 'shakibi', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '626-417-3378', 2, 'mshakibi', 1);
-insert into users values (5, 'Test', 'admin@techit.com', 1, 'Local', 'Admin', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '222-222-2222', 0, 'admin', 1);
-insert into users values (6, 'Test', 'technician2@techit.com', 1, 'joe', 'cota', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '333-333-3333', 2, 'jcota', 1);
-insert into users values (7, 'Test', 'tech@techit.com', 1, 'Jane', 'Doe', '$2a$10$Xm5I2iYA/4vZytuGpVIro.zUAHGG0eAAcY2.aX20kRcM8u7AEmFom', '444-444-4444', 3, 'JDoe', 1);
-
-
-insert into tickets values (1, 'completionDetails', 1, 1, 'details', '2009-09-22', '2009-09-22', 'lastUpdatedTime', 'location:', '2009-09-22', 'startDateTime', 'subject', 1, 1);
-insert into tickets values (2, 'completionDetails2', 2, 2, 'details2', '2017-09-22', '2017-09-22', 'lastUpdatedTime2', 'location2', '2017-09-22', 'startDateTime2', 'subject2', 2, 1);
-insert into tickets values (3, 'completionDetails3', 2, 2, 'details3', '2018-01-22', '2018-01-22', 'lastUpdatedTime2', 'Location3', '2018-01-22', 'startDateTime3', 'subject3', 2, 2);
-
-
-insert into updates (`id`, `modifiedDate`, `updateDetails`, `modifiedById`, `ticketId`) values ('1', '2018-02-10', 'details of stuff', '1', '1');
-insert into updates (`id`, `modifiedDate`, `updateDetails`, `modifiedById`, `ticketId`) values ('2', '2018-11-23', 'stuff is in the details', '2', '2');
-insert into updates (`id`, `modifiedDate`, `updateDetails`, `modifiedById`, `ticketId`) values ('3', '2018-12-13', 'there are some detailed stuff', '2', '1');
-
-insert into tickets_xref_users (ticketId, userId) values (1, 1);
-insert into tickets_xref_users (ticketId, userId) values (2, 7);
-insert into tickets_xref_users (ticketId, userId) values (3, 1);
-insert into tickets_xref_users (ticketId, userId) values (3, 7);
-
