@@ -45,8 +45,8 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@EnableWebMvc
 	static class AppConfig implements WebMvcConfigurer {
 		
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
+		/** Registers the {@code AuthenticationHandlerInterceptor} as an interceptor to allow it to run inside the unit test. */
+		@Override public void addInterceptors(InterceptorRegistry registry) {
 		    registry.addInterceptor(new AuthenticationHandlerInterceptor(new TokenAuthenticationService())).addPathPatterns("/**");
 		}
 		
