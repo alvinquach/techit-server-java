@@ -18,6 +18,6 @@ public interface TicketDao {
 
 	List<Ticket> getTickes();
 
-	List<Ticket> getTechnicianTickets(User user);
+	List<Ticket> getTicketsByTechnician(User user);
 
 }

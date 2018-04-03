@@ -19,7 +19,9 @@ import techit.model.Ticket;
 import techit.model.User;
 import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
+import techit.rest.error.EntityNotFoundException;
 import techit.rest.error.RestException;
+import techit.util.StringUtils;
 
 @RestController
 public class UserController {
@@ -43,63 +45,75 @@ public class UserController {
 
 	@AllowedUserPositions(Position.SYS_ADMIN)
 	@RequestMapping(value = "/users", method = RequestMethod.POST)
-	public User addUser( @RequestBody User user ) {
-		
-		// TODO Check if all the non-nullable fields are filled.
-		//		if (...) {
-		//			throw new RestException(400, "Missing required data.");
-		//		}
+	public User addUser(@RequestBody User user) {
+
+		boolean missingRequiredFields =
+				StringUtils.isNullOrEmpty(user.getUsername()) ||
+				StringUtils.isNullOrEmpty(user.getPassword()) ||
+				StringUtils.isNullOrEmpty(user.getFirstName()) ||
+				StringUtils.isNullOrEmpty(user.getLastName());
+
+		if (missingRequiredFields) {
+			throw new RestException(400, "Required fields are missing in " + user.getClass().getSimpleName() + " object.");
+		}
 
 		user.setHash(passwordEncoder.encode(user.getPassword()));
 		return userDao.saveUser(user);
 	}
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
-    public User getUser(HttpServletRequest request, @PathVariable Long userId) {
-    	User requester = tokenAuthenticationService.getUserFromRequest(request);
-    	if (requester != null && (requester.getPosition() == Position.SYS_ADMIN || requester.getId().equals(userId))) {
-    		User result = userDao.getUser(userId);
-    		if (result != null) {
-    			return result;
-    		}
-    		throw new RestException(404, "User does not exist");
-    	}
-    	throw new RestException(403, "You do not have access this user");
-    }
-    
+	@RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
+	public User getUser(HttpServletRequest request, @PathVariable Long userId) {
+		
+		// TODO Should supervising technicians be able to access users under their supervision?
+		
+		User requester = tokenAuthenticationService.getUserFromRequest(request);
+		if (requester != null && (requester.getPosition() == Position.SYS_ADMIN || requester.getId().equals(userId))) {
+			User result = userDao.getUser(userId);
+			if (result != null) {
+				return result;
+			}
+			throw new EntityNotFoundException(User.class);
+		}
+		throw new RestException(403, "You do not have access this user");
+	}
+
 
 	@RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
-	public User updateUser(@PathVariable Long userId, @RequestBody User update) {
-		User user = userDao.getUser(userId);
-		if (user == null) {
-			throw new RestException(500, "Cannot find user ID " + userId);
+	public User updateUser(@PathVariable Long userId, @RequestBody User user) {
+		
+		User target = userDao.getUser(userId);
+		
+		if (target == null) {
+			throw new EntityNotFoundException(User.class);
 		}
-		if (!(update.getDepartment() == null))
-			user.setDepartment(update.getDepartment());
-		if (!(update.getFirstName() == null))
-			user.setFirstName(update.getFirstName());
-		if (!(update.getLastName() == null))
-			user.setLastName(update.getLastName());
-		if (!(update.getPosition() == null))
-			user.setPosition(update.getPosition());
-		if (!(update.getEmail() == null))
-			user.setEmail(update.getEmail());
-		if (!(update.getPhoneNumber() == null))
-			user.setPhoneNumber(update.getPhoneNumber());
-		if (!(update.getUnit() == null))
-			user.setUnit(update.getUnit());
-		return userDao.saveUser(user);
+		
+		// Update the target user's fields.
+		// TODO Add ability to change username and password?
+		if (user.getDepartment() != null)
+			target.setDepartment(user.getDepartment());
+		if (user.getFirstName() != null)
+			target.setFirstName(user.getFirstName());
+		if (user.getLastName() != null)
+			target.setLastName(user.getLastName());
+		if (user.getPosition() != null)
+			target.setPosition(user.getPosition());
+		if (user.getEmail() != null)
+			target.setEmail(user.getEmail());
+		if (user.getPhoneNumber() != null)
+			target.setPhoneNumber(user.getPhoneNumber());
+		if (user.getUnit() != null && user.getUnit().getId() != null)
+			target.setUnit(user.getUnit());
+		
+		return userDao.saveUser(target);
 	}
 
 	@RequestMapping(value = "/users/{userId}/tickets", method = RequestMethod.GET)
 	public List<Ticket> getTickets(@PathVariable Long userId) {
-
-		return ticketDao.getTicketsByRequestor(userDao.getUser(userId));
+		return ticketDao.getTicketsByRequestor(new User(userId));
 	}
 
 	@RequestMapping(value = "/technicians/{userId}/tickets", method = RequestMethod.GET)
-	public List<Ticket> getTechnicianTickets(@PathVariable Long userId) {
-
-		return ticketDao.getTechnicianTickets(userDao.getUser(userId));
+	public Object getTechnicianTickets(@PathVariable Long userId) {
+		return ticketDao.getTicketsByTechnician(new User(userId));
 	}
 }
