@@ -19,7 +19,7 @@ import techit.model.Ticket;
 import techit.model.User;
 import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
-import techit.rest.error.EntityNotFoundException;
+import techit.rest.error.EntityDoesNotExistException;
 import techit.rest.error.MissingFieldsException;
 import techit.rest.error.RestException;
 import techit.util.StringUtils;
@@ -73,7 +73,7 @@ public class UserController {
 			if (result != null) {
 				return result;
 			}
-			throw new EntityNotFoundException(User.class);
+			throw new EntityDoesNotExistException(User.class);
 		}
 		throw new RestException(403, "You do not have access this user");
 	}
@@ -85,7 +85,7 @@ public class UserController {
 		User target = userDao.getUser(userId);
 
 		if (target == null) {
-			throw new EntityNotFoundException(User.class);
+			throw new EntityDoesNotExistException(User.class);
 		}
 
 		// Update the target user's fields.
