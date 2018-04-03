@@ -1,4 +1,4 @@
-package techit.rest.controller;
+package techit.rest.controller.user;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,18 +15,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import techit.authentication.AuthenticationHandlerInterceptor;
 import techit.authentication.TokenAuthenticationService;
+import techit.model.User;
 
-@Test(groups = "GetUserTest")
+@Test(groups = "AddUserTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
+public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -35,13 +38,18 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	private MockMvc mockMvc;
-	
+
 	private ObjectMapper objectMapper;
 
 	@Configuration
 	@EnableWebMvc
-	static class ContextConfiguration {
-
+	static class AppConfig implements WebMvcConfigurer {
+		
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+		    registry.addInterceptor(new AuthenticationHandlerInterceptor(new TokenAuthenticationService())).addPathPatterns("/**");
+		}
+		
 	}
 
 	@BeforeClass
@@ -54,23 +62,37 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	public void testOk() throws Exception {
 
 		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "amgarcia");
+		credentials.put("username", "techit");
 		credentials.put("password", "abcd");
 		String jwt = tokenAuthenticationService.generateToken(credentials);
 
+		User user = new User(999L); // For some reason, the ID is not being uniquely generated.
+		user.setUsername("asdf");
+		user.setPassword("asdf");
+		user.setFirstName("Ay Ess");
+		user.setLastName("Dee Eff");
+
+		// TODO Add more fields for testing.
+
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/users/{userId}", 2)
-				.header("Authorization", jwt);
+				.post("/users")
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(user));
 
 		String res = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn()
 				.getResponse()
 				.getContentAsString();
-		
-		Map<String, Object> user = objectMapper.readValue(res, new TypeReference<Map<String, Object>>() {});
-		assert user.get("username").equals(credentials.get("username"));
-			
+
+		User responseObject = objectMapper.readValue(res, User.class);
+
+		assert responseObject.getId() != null &&
+				responseObject.getUsername().equals(user.getUsername()) &&
+				responseObject.getFirstName().equals(user.getFirstName()) &&
+				responseObject.getLastName().equals(user.getLastName());
+
 	}
 
 	@Test
@@ -82,15 +104,17 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 		String jwt = tokenAuthenticationService.generateToken(credentials);
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/users/{userId}", 1)
-				.header("Authorization", jwt);
+				.post("/users")
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(new User()));
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
 
 	}
-	
+
 	@Test
-	public void testNotFound() throws Exception {
+	public void testMissingFields() throws Exception {
 
 		Map<String, Object> credentials = new HashMap<>();
 		credentials.put("username", "techit");
@@ -98,10 +122,12 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 		String jwt = tokenAuthenticationService.generateToken(credentials);
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/users/{userId}", 999)
-				.header("Authorization", jwt);
+				.post("/users")
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(new User()));
 
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isNotFound());
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
 	}
 

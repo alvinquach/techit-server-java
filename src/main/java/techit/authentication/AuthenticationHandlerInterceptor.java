@@ -15,8 +15,11 @@ import techit.rest.error.RestException;
 
 public class AuthenticationHandlerInterceptor extends HandlerInterceptorAdapter {
 	
-	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
+	
+	public AuthenticationHandlerInterceptor(@Autowired TokenAuthenticationService tokenAuthenticationService) {
+		this.tokenAuthenticationService = tokenAuthenticationService;
+	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
