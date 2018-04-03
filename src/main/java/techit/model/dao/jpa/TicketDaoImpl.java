@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +28,16 @@ public class TicketDaoImpl implements TicketDao {
 	}
 	
 	@Override
+	@Transactional
 	public Ticket getTicket(Long id) {
-		return entityManager.find(Ticket.class, id);
+		Ticket ticket = entityManager.find(Ticket.class, id);
+		if (ticket == null) {
+			return null;
+		}
+		
+		// TODO Split this off into another method.
+		Hibernate.initialize(ticket.getTechnicians());
+		return ticket;
 	}
 
 	@Override
