@@ -45,7 +45,7 @@ public class TicketController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Ticket> getTickets() {
-		return ticketDao.getTickes();
+		return ticketDao.getTickets();
 	}
 
 	
