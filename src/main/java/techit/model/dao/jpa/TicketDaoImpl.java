@@ -26,9 +26,9 @@ public class TicketDaoImpl implements TicketDao {
 	}
 
 	@Override
-	public List<Ticket> getTicketsByRequestor(User user) {
-		return entityManager.createQuery("from Ticket where requestor = :requestor", Ticket.class)
-				.setParameter("requestor", user)
+	public List<Ticket> getTicketsByCreator(User user) {
+		return entityManager.createQuery("from Ticket where createdBy = :createdBy", Ticket.class)
+				.setParameter("createdBy", user)
 				.getResultList();
 	}
 	

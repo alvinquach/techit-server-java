@@ -9,24 +9,23 @@ use techit2;
     create table tickets (
        id bigint not null,
         completionDetails longtext,
-        currentPriority integer not null,
-        currentProgress integer not null,
+        createdDate date,
         details longtext,
         endDate date,
         lastUpdated date,
-        lastUpdatedTime varchar(255),
         location varchar(255),
+        priority integer not null,
         startDate date,
-        startDateTime varchar(255),
+        status integer not null,
         subject varchar(255),
-        requestorId bigint not null,
+        createdById bigint not null,
         unitId bigint,
         primary key (id)
     ) engine=InnoDB;
 
-    create table tickets_xref_users (
+    create table tickets_xref_technicians (
        ticketId bigint not null,
-        userId bigint not null
+        technicianId bigint not null
     ) engine=InnoDB;
 
     create table units (
@@ -63,8 +62,8 @@ use techit2;
        add constraint UK_r43af9ap4edm43mmtq01oddj6 unique (username);
 
     alter table tickets 
-       add constraint FK2kslelauh037pxdpkwh94iixa 
-       foreign key (requestorId) 
+       add constraint FKoeovjvjaeigjqqgcjiidte9vb 
+       foreign key (createdById) 
        references users (id);
 
     alter table tickets 
@@ -72,13 +71,13 @@ use techit2;
        foreign key (unitId) 
        references units (id);
 
-    alter table tickets_xref_users 
-       add constraint FK9ni8cyqa5kr1wtpdg6xtla7o5 
-       foreign key (userId) 
+    alter table tickets_xref_technicians 
+       add constraint FKhke3bgfh79bxfnna73k736oil 
+       foreign key (technicianId) 
        references users (id);
 
-    alter table tickets_xref_users 
-       add constraint FKp59p9e6jhd42tsyasxqup7d38 
+    alter table tickets_xref_technicians 
+       add constraint FK1u3namryqqw660qcar4hnpnuu 
        foreign key (ticketId) 
        references tickets (id);
 

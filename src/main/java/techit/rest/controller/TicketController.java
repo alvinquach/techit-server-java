@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import techit.authentication.TokenAuthenticationService;
 import techit.model.Priority;
-import techit.model.Progress;
+import techit.model.Status;
 import techit.model.Ticket;
 import techit.model.Update;
 import techit.model.User;
@@ -50,7 +50,7 @@ public class TicketController {
 		//			throw new RestException(400, "Missing required data.");
 		//		}
 
-		ticket.setRequestor(tokenAuthenticationService.getUserFromRequest(request));
+		ticket.setCreatedBy(tokenAuthenticationService.getUserFromRequest(request));
 
 		return ticketDao.saveTicket(ticket);
 	}
@@ -70,7 +70,7 @@ public class TicketController {
 		}
 		ticket.setDetails(update.getDetails());
 		ticket.setLastUpdated(update.getLastUpdated());
-		ticket.setCurrentPriority(update.getCurrentPriority());
+		ticket.setPriority(update.getPriority());
 		ticket.setLocation(update.getLocation());
 		return ticketDao.saveTicket(ticket);
 	}
@@ -97,7 +97,7 @@ public class TicketController {
 
 
 	@RequestMapping(value = "/{ticketId}/status/{status}" , method=RequestMethod.PUT)
-	public void putTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Progress status, @RequestBody String description) {
+	public void putTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
 
 		User user = tokenAuthenticationService.getUserFromRequest(request);
 
@@ -107,7 +107,7 @@ public class TicketController {
 		}
 
 
-		ticket.setCurrentProgress(status);
+		ticket.setStatus(status);
 
 		List<Update> updates = ticket.getUpdates();
 		Update update= new Update(); 
@@ -128,7 +128,7 @@ public class TicketController {
 	@RequestMapping(value = "/{ticketId}/priority/{priority}" , method=RequestMethod.PUT)
 	public void putTicketPriority( @PathVariable Long ticketId,@PathVariable Priority priority ) {
 		Ticket ticket = ticketDao.getTicket(ticketId);
-		ticket.setCurrentPriority(priority);
+		ticket.setPriority(priority);
 		ticketDao.saveTicket(ticket);
 
 	}

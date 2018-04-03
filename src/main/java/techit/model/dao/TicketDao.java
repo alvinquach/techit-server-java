@@ -12,7 +12,7 @@ public interface TicketDao {
 
 	Ticket saveTicket(Ticket ticket);
 	
-	List<Ticket> getTicketsByRequestor(User user);
+	List<Ticket> getTicketsByCreator(User user);
 	
 	List<Ticket> getTicketsByUnit(Unit unit);
 

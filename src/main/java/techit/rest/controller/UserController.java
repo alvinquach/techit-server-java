@@ -63,9 +63,9 @@ public class UserController {
 
 	@RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
 	public User getUser(HttpServletRequest request, @PathVariable Long userId) {
-		
+
 		// TODO Should supervising technicians be able to access users under their supervision?
-		
+
 		User requester = tokenAuthenticationService.getUserFromRequest(request);
 		if (requester != null && (requester.getPosition() == Position.SYS_ADMIN || requester.getId().equals(userId))) {
 			User result = userDao.getUser(userId);
@@ -80,40 +80,33 @@ public class UserController {
 
 	@RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
 	public User updateUser(@PathVariable Long userId, @RequestBody User user) {
-		
+
 		User target = userDao.getUser(userId);
-		
+
 		if (target == null) {
 			throw new EntityNotFoundException(User.class);
 		}
-		
+
 		// Update the target user's fields.
 		// TODO Add ability to change username and password?
-		if (user.getDepartment() != null)
-			target.setDepartment(user.getDepartment());
-		if (user.getFirstName() != null)
-			target.setFirstName(user.getFirstName());
-		if (user.getLastName() != null)
-			target.setLastName(user.getLastName());
-		if (user.getPosition() != null)
-			target.setPosition(user.getPosition());
-		if (user.getEmail() != null)
-			target.setEmail(user.getEmail());
-		if (user.getPhoneNumber() != null)
-			target.setPhoneNumber(user.getPhoneNumber());
-		if (user.getUnit() != null && user.getUnit().getId() != null)
-			target.setUnit(user.getUnit());
-		
+		target.setDepartment(user.getDepartment());
+		target.setFirstName(user.getFirstName());
+		target.setLastName(user.getLastName());
+		target.setPosition(user.getPosition());
+		target.setEmail(user.getEmail());
+		target.setPhoneNumber(user.getPhoneNumber());
+		target.setUnit(user.getUnit());
+
 		return userDao.saveUser(target);
 	}
 
 	@RequestMapping(value = "/users/{userId}/tickets", method = RequestMethod.GET)
-	public List<Ticket> getTickets(@PathVariable Long userId) {
-		return ticketDao.getTicketsByRequestor(new User(userId));
+	public List<Ticket> getTicketsByCreator(@PathVariable Long userId) {
+		return ticketDao.getTicketsByCreator(new User(userId));
 	}
 
 	@RequestMapping(value = "/technicians/{userId}/tickets", method = RequestMethod.GET)
-	public Object getTechnicianTickets(@PathVariable Long userId) {
+	public Object getTicketsByTechnician(@PathVariable Long userId) {
 		return ticketDao.getTicketsByTechnician(new User(userId));
 	}
 }
