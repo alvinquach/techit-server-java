@@ -3,6 +3,7 @@ package techit.model.dao.jpa;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
@@ -26,9 +27,14 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public User getUserByUsername(String username) {
-		return entityManager.createQuery("from User where username = :username", User.class)
-				.setParameter("username", username)
-				.getSingleResult();
+		try {
+			return entityManager.createQuery("from User where username = :username", User.class)
+					.setParameter("username", username)
+					.getSingleResult();
+		}
+		catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	@Override

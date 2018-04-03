@@ -1,7 +1,7 @@
 package techit.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "tickets")
 public class Ticket implements Serializable {
@@ -26,54 +28,65 @@ public class Ticket implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
-
+	
+	/** List of technicians assigned to the ticket. */
+	@JsonIgnore
 	@ManyToMany
-	@JoinTable(
-			name = "tickets_xref_users", 
-			joinColumns = @JoinColumn(name = "ticketId"),
-			inverseJoinColumns = @JoinColumn(name = "userId"))
-	private List<User> technicians;	// List of all technicians 
+	@JoinTable(name = "tickets_xref_technicians", joinColumns = @JoinColumn(name = "ticketId"), inverseJoinColumns = @JoinColumn(name = "technicianId"))
+	private List<User> technicians;
 
+	/** The current status of the ticket. */
 	@Enumerated
 	@Column(nullable = false)
-	private Progress currentProgress; // Current progress of the ticket
+	private Status status = Status.OPEN;
 
+	/** The Importance or level of urgency of the ticket. */
 	@Enumerated
 	@Column(nullable = false)
-	private Priority currentPriority; // Importance or level of urgency of the ticket
+	private Priority priority;
 
+	/** The user who created the ticket. */
 	@ManyToOne
-	@JoinColumn(name = "requestorId", nullable = false)
-	private User requestor;
+	@JoinColumn(name = "createdById", nullable = false)
+	private User createdBy;
+	
+	/** The date that the ticket was created on. */
+	@Column(nullable = false)
+	private Date createdDate;
 
-	private String subject;			// Subject of the ticket.
+	/** The project's starting date. */
+	private Date startDate;
 
+	/** The project's completion date. */
+	private Date endDate;
+
+	/** Last date where changes were made to the ticket (edits, technician updates, etc.). */
+	private Date lastUpdated;
+
+	/** The subject line of the ticket. */
+	@Column(nullable = false)
+	private String subject;
+
+	/** Text description of the project. */
 	@Lob
-	private String details; 		// Text concerning the project.
+	private String details;
 
-	private Date startDate; 		// Project's starting date.
+	/** Location of the project. */
+	private String location;
 
-	private String startDateTime;	// Time of when the ticket was created.
-
-	private Date endDate; 			// When the project was completed.
-
-	private Date lastUpdated;		// Last date where changes were made to the ticket (edits, technician updates, etc.)
-
-	// DO WE NEED THIS?
-	private String lastUpdatedTime; // Same as lastUpdated but this is for the time changes were made.
-
-	private String location; 	// Location where the project is.
-
+	/** The unit assigned to the ticket. */
 	@ManyToOne 
 	@JoinColumn(name="unitId") 
-	private Unit unit;        // The unit that was assigned to the ticket. 
-
+	private Unit unit;
+	
+	/** List of Updates made to the ticket. */
+	@JsonIgnore
 	@OneToMany(mappedBy = "ticket")
-	private List<Update> updates;	// List of all updates that was made to the ticket.
+	private List<Update> updates;
 
+	/** Information pertaining to vendors, costs, materials used, etc. */
 	@Lob
-	private String completionDetails; // Information pertaining vendors, cost,
-	// materials used.
+	private String completionDetails;
 
 	public Long getId() {
 		return id;
@@ -91,44 +104,36 @@ public class Ticket implements Serializable {
 		this.technicians = technicians;
 	}
 
-	public Progress getCurrentProgress() {
-		return currentProgress;
+	public Status getStatus() {
+		return status;
 	}
 
-	public void setCurrentProgress(Progress currentProgress) {
-		this.currentProgress = currentProgress;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
-	public Priority getCurrentPriority() {
-		return currentPriority;
+	public Priority getPriority() {
+		return priority;
 	}
 
-	public void setCurrentPriority(Priority currentPriority) {
-		this.currentPriority = currentPriority;
+	public void setPriority(Priority priority) {
+		this.priority = priority;
 	}
 
-	public User getRequestor() {
-		return requestor;
+	public User getCreatedBy() {
+		return createdBy;
 	}
 
-	public void setRequestor(User requestor) {
-		this.requestor = requestor;
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 
-	public String getSubject() {
-		return subject;
+	public Date getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	public String getDetails() {
-		return details;
-	}
-
-	public void setDetails(String details) {
-		this.details = details;
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 	public Date getStartDate() {
@@ -137,14 +142,6 @@ public class Ticket implements Serializable {
 
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
-	}
-
-	public String getStartDateTime() {
-		return startDateTime;
-	}
-
-	public void setStartDateTime(String startDateTime) {
-		this.startDateTime = startDateTime;
 	}
 
 	public Date getEndDate() {
@@ -163,12 +160,20 @@ public class Ticket implements Serializable {
 		this.lastUpdated = lastUpdated;
 	}
 
-	public String getLastUpdatedTime() {
-		return lastUpdatedTime;
+	public String getSubject() {
+		return subject;
 	}
 
-	public void setLastUpdatedTime(String lastUpdatedTime) {
-		this.lastUpdatedTime = lastUpdatedTime;
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
 	}
 
 	public String getLocation() {
@@ -202,4 +207,9 @@ public class Ticket implements Serializable {
 	public void setCompletionDetails(String completionDetails) {
 		this.completionDetails = completionDetails;
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 }

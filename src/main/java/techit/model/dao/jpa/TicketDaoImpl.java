@@ -26,9 +26,17 @@ public class TicketDaoImpl implements TicketDao {
 	}
 
 	@Override
-	public List<Ticket> getTicketsByRequestor(User user) {
-		return entityManager.createQuery("from Ticket where requestorId = :requestor", Ticket.class)
-				.setParameter("requestor", user)
+	public List<Ticket> getTicketsByCreator(User user) {
+		return entityManager.createQuery("from Ticket where createdBy = :createdBy", Ticket.class)
+				.setParameter("createdBy", user)
+				.getResultList();
+	}
+	
+	@Override
+	public List<Ticket> getTicketsByTechnician(User technician) {
+		String query = "from Ticket ticket where :technician in elements(ticket.technicians)";
+		return entityManager.createQuery(query, Ticket.class)
+				.setParameter("technician", technician)
 				.getResultList();
 	}
 
@@ -42,6 +50,13 @@ public class TicketDaoImpl implements TicketDao {
 	public List<Ticket> getTicketsByUnit(Unit unit) {
 		return entityManager.createQuery("from Ticket where unit = :unit", Ticket.class)
 				.setParameter("unit", unit)
+				.getResultList();
+	}
+
+	@Override
+	public List<Ticket> getTickes() {
+
+		return entityManager.createQuery("from Ticket order by id", Ticket.class)
 				.getResultList();
 	}
 
