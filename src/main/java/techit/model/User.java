@@ -35,7 +35,7 @@ public class User implements Serializable {
 	private String hash;
 
 	/** 
-	 * The user's password. THis property is transient, so it does not get stored in the database.
+	 * The user's plaintext password. This property is transient, so it does not get stored in the database.
 	 * Also, instead of being a write only property, it is serialized as long as the value is not null.
 	 * This will allow {@code User} objects to be manually serialized in the unit tests and still include the password.
 	 */
