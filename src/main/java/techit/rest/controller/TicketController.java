@@ -45,7 +45,7 @@ public class TicketController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Ticket> getTickets() {
-		return ticketDao.getTickes();
+		return ticketDao.getTickets();
 	}
 
 	
@@ -129,7 +129,7 @@ public class TicketController {
 		
 		// TODO Check if this gives an error due to lazy loading.
 		// If it does, then we may need a new DAO method just for getting technicians.
-		List <User> user = ticket.getTechnicians();
+		List<User> user = ticket.getTechnicians();
 		
 		// TODO Make sure the technician belongs to the Unit before adding.
 		user.add(userDao.getUser(userId));

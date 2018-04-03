@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,22 @@ public class TicketDaoImpl implements TicketDao {
 	private EntityManager entityManager;
 
 	@Override
+	public List<Ticket> getTickets() {
+		return entityManager.createQuery("from Ticket order by id", Ticket.class)
+				.getResultList();
+	}
+	
+	@Override
+	@Transactional
 	public Ticket getTicket(Long id) {
-		return entityManager.find(Ticket.class, id);
+		Ticket ticket = entityManager.find(Ticket.class, id);
+		if (ticket == null) {
+			return null;
+		}
+		
+		// TODO Split this off into another method.
+		Hibernate.initialize(ticket.getTechnicians());
+		return ticket;
 	}
 
 	@Override
@@ -50,13 +65,6 @@ public class TicketDaoImpl implements TicketDao {
 	public List<Ticket> getTicketsByUnit(Unit unit) {
 		return entityManager.createQuery("from Ticket where unit = :unit", Ticket.class)
 				.setParameter("unit", unit)
-				.getResultList();
-	}
-
-	@Override
-	public List<Ticket> getTickes() {
-
-		return entityManager.createQuery("from Ticket order by id", Ticket.class)
 				.getResultList();
 	}
 

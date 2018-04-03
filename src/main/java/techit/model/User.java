@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -28,12 +30,17 @@ public class User implements Serializable {
 	@Column(nullable = false, unique = true)
 	private String username;
 
-    @JsonProperty(access = Access.WRITE_ONLY)
-    @Column(nullable = false, length = 60)
-    private String hash;
-
-    @Transient
 	@JsonProperty(access = Access.WRITE_ONLY)
+	@Column(nullable = false, length = 60)
+	private String hash;
+
+	/** 
+	 * The user's plaintext password. This property is transient, so it does not get stored in the database.
+	 * Also, instead of being a write only property, it is serialized as long as the value is not null.
+	 * This will allow {@code User} objects to be manually serialized in the unit tests and still include the password.
+	 */
+	@Transient
+	@JsonInclude(Include.NON_NULL)
 	private String password;
 
 	@Column(nullable = false)
@@ -60,11 +67,11 @@ public class User implements Serializable {
 	private Unit unit; // unit to which this user belongs to
 
 	public User() {}
-	
+
 	public User(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

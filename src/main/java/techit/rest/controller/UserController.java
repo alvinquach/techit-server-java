@@ -39,6 +39,7 @@ public class UserController {
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
+	// TODO Should this also be only accessible by admins?
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public List<User> getUsers() {
 		return userDao.getUsers();
@@ -65,7 +66,7 @@ public class UserController {
 	@RequestMapping(value = "/users/{userId}", method = RequestMethod.GET)
 	public User getUser(HttpServletRequest request, @PathVariable Long userId) {
 
-		// TODO Should supervising technicians be able to access users under their supervision?
+		// TODO Should supervising technicians also be able to access users under their supervision?
 
 		User requester = tokenAuthenticationService.getUserFromRequest(request);
 		if (requester != null && (requester.getPosition() == Position.SYS_ADMIN || requester.getId().equals(userId))) {

@@ -60,10 +60,8 @@ public class TokenAuthenticationService {
 		throw new RestException(401, "Authorization token is missing or invalid");
 	}
 
-	public String generateToken(Map<String, Object> credentials) {
-		Object username = credentials.get("username");
-		Object password = credentials.get("password");
-		if(username != null && username instanceof String && password != null && password instanceof String) {
+	public String generateToken(String username, String password) {
+		if(username != null && password != null) {
 			User user = userDao.getUserByUsername((String)username);
 			if (user != null && passwordEncoder.matches((String)password, user.getHash())) {
 				Map<String, Object> claims = new HashMap<>();
