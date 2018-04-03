@@ -21,7 +21,9 @@ import techit.model.Update;
 import techit.model.User;
 import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
+import techit.rest.error.MissingFieldsException;
 import techit.rest.error.RestException;
+import techit.util.StringUtils;
 
 @RestController
 @RequestMapping("/tickets")
@@ -45,10 +47,9 @@ public class TicketController {
 	@RequestMapping(method = RequestMethod.POST)
 	public Ticket createTicket(HttpServletRequest request, @RequestBody Ticket ticket) {
 
-		// TODO Check if all the non-nullable fields are filled.
-		//		if (...) {
-		//			throw new RestException(400, "Missing required data.");
-		//		}
+		if (ticket.getPriority() == null || StringUtils.isNullOrEmpty(ticket.getSubject())) {
+			throw new MissingFieldsException(ticket);
+		}
 
 		ticket.setCreatedBy(tokenAuthenticationService.getUserFromRequest(request));
 

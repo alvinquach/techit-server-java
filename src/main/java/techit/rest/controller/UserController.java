@@ -20,6 +20,7 @@ import techit.model.User;
 import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
 import techit.rest.error.EntityNotFoundException;
+import techit.rest.error.MissingFieldsException;
 import techit.rest.error.RestException;
 import techit.util.StringUtils;
 
@@ -54,7 +55,7 @@ public class UserController {
 				StringUtils.isNullOrEmpty(user.getLastName());
 
 		if (missingRequiredFields) {
-			throw new RestException(400, "Required fields are missing in " + user.getClass().getSimpleName() + " object.");
+			throw new MissingFieldsException(user);
 		}
 
 		user.setHash(passwordEncoder.encode(user.getPassword()));
