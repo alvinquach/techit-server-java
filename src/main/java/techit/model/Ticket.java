@@ -38,7 +38,7 @@ public class Ticket implements Serializable {
 	/** The current status of the ticket. */
 	@Enumerated
 	@Column(nullable = false)
-	private Status status;
+	private Status status = Status.OPEN;
 
 	/** The Importance or level of urgency of the ticket. */
 	@Enumerated
@@ -51,7 +51,7 @@ public class Ticket implements Serializable {
 	private User createdBy;
 	
 	/** The date that the ticket was created on. */
-	@JoinColumn(nullable = false)
+	@Column(nullable = false)
 	private Date createdDate;
 
 	/** The project's starting date. */
@@ -64,6 +64,7 @@ public class Ticket implements Serializable {
 	private Date lastUpdated;
 
 	/** The subject line of the ticket. */
+	@Column(nullable = false)
 	private String subject;
 
 	/** Text description of the project. */

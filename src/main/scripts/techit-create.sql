@@ -9,7 +9,7 @@ use techit2;
     create table tickets (
        id bigint not null,
         completionDetails longtext,
-        createdDate date,
+        createdDate date not null,
         details longtext,
         endDate date,
         lastUpdated date,
@@ -17,7 +17,7 @@ use techit2;
         priority integer not null,
         startDate date,
         status integer not null,
-        subject varchar(255),
+        subject varchar(255) not null,
         createdById bigint not null,
         unitId bigint,
         primary key (id)
