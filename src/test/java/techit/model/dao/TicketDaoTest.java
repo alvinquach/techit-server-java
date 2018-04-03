@@ -8,7 +8,7 @@ import org.springframework.test.context.testng.AbstractTransactionalTestNGSpring
 import org.testng.annotations.Test;
 
 import techit.model.Priority;
-import techit.model.Progress;
+import techit.model.Status;
 import techit.model.Ticket;
 import techit.model.Unit;
 import techit.model.User;
@@ -22,18 +22,18 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 
     @Test
     public void getTicket() {
-        assert ticketDao.getTicket(1L).getRequestor().getId() == 1L;
+        assert ticketDao.getTicket(1L).getCreatedBy().getId() == 1L;
     }
     
     @Test
-    public void getTicketsByRequestor() {
+    public void getTicketsByCreatedBy() {
     	
     	// Create a user for querying.
     	User user = new User();
     	user.setId(2L);
     	
     	// Query for the tickets.
-		List<Ticket> tickets = ticketDao.getTicketsByRequestor(user);
+		List<Ticket> tickets = ticketDao.getTicketsByCreator(user);
 		
 		// There should be at least 2 tickets requested by user 2, which were added by the sql create script.
 		if (tickets.size() < 2) {
@@ -42,7 +42,7 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 				
 		// Check if the users's ID in each of the tickets match that of the queried user.
 		for (Ticket ticket : tickets) {
-			if (ticket.getRequestor() == null || ticket.getRequestor().getId() != user.getId()) {
+			if (ticket.getCreatedBy() == null || ticket.getCreatedBy().getId() != user.getId()) {
 				assert false;
 			}
 		}
@@ -56,9 +56,9 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
     	user.setId(1L);
     	
     	Ticket ticket = new Ticket();
-        ticket.setCurrentPriority(Priority.NA);
-        ticket.setCurrentProgress(Progress.ONHOLD);
-        ticket.setRequestor(user);
+        ticket.setPriority(Priority.NA);
+        ticket.setStatus(Status.ONHOLD);
+        ticket.setCreatedBy(user);
         
         ticket = ticketDao.saveTicket(ticket);
         

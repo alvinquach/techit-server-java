@@ -10,8 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -30,11 +29,11 @@ public class User implements Serializable {
 	private String username;
 
     @JsonProperty(access = Access.WRITE_ONLY)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 60)
     private String hash;
 
+    @Transient
 	@JsonProperty(access = Access.WRITE_ONLY)
-	@Column(nullable = false)
 	private String password;
 
 	@Column(nullable = false)
@@ -60,6 +59,12 @@ public class User implements Serializable {
 	@JoinColumn(name="unitId")
 	private Unit unit; // unit to which this user belongs to
 
+	public User() {}
+	
+	public User(Long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -74,6 +79,14 @@ public class User implements Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 
 	public String getPassword() {
@@ -146,20 +159,6 @@ public class User implements Serializable {
 
 	public void setUnit(Unit unit) {
 		this.unit = unit;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "[" + id + ", " + username + ", " + password + "]";
-	}
-
-	public String getHash() {
-		return hash;
-	}
-
-	public void setHash(String hash) {
-		this.hash = hash;
 	}
 
 }
