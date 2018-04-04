@@ -74,8 +74,8 @@ public class UserController {
 
 		// TODO Should supervising technicians also be able to access users under their supervision?
 
-		User requester = tokenAuthenticationService.getUserFromRequest(request);
-		if (requester != null && (requester.getPosition() == Position.SYS_ADMIN || requester.getId().equals(userId))) {
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
+		if (requestor != null && (requestor.getPosition() == Position.SYS_ADMIN || requestor.getId().equals(userId))) {
 			User result = userDao.getUser(userId);
 			if (result != null) {
 				return result;
