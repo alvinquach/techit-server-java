@@ -21,6 +21,7 @@ import techit.model.dao.UserDao;
 import techit.rest.error.MissingFieldsException;
 
 @RestController
+@RequestMapping("/units")
 public class UnitController {
 	
 	@Autowired
@@ -35,13 +36,14 @@ public class UnitController {
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 	
-	@RequestMapping(value = "/units", method = RequestMethod.GET)
+	@AllowedUserPositions(Position.SYS_ADMIN)
+	@RequestMapping(method = RequestMethod.GET)
 	public List<Unit> getUnits(){
 		return unitDao.getUnits();
 	}
 	
 	@AllowedUserPositions(Position.SYS_ADMIN)
-	@RequestMapping(value = "/units", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public Unit addUnit(@RequestBody Unit unit) {
 
 		if (unit.getId() == null || unit.getName() == null) {
@@ -51,14 +53,22 @@ public class UnitController {
 		return unitDao.saveUnit(unit);
 	}
 	
-	@RequestMapping(value = "/units/{unitId}/technicians", method = RequestMethod.GET)
+	@AllowedUserPositions(Position.SYS_ADMIN)
+	@RequestMapping(value = "/{unitId}/technicians", method = RequestMethod.GET)
 	public List<User> getTechniciansByUnit(@PathVariable Long unitId){
+		
+		// TODO Allow supervisors to get technicians for their own units?
+		
 		Unit unit = unitDao.getUnit(unitId);
 		return userDao.getTechniciansByUnit(unit);
 	}
 	
-	@RequestMapping(value = "/units/{unitId}/tickets", method = RequestMethod.GET)
+	@AllowedUserPositions(Position.SYS_ADMIN)
+	@RequestMapping(value = "/{unitId}/tickets", method = RequestMethod.GET)
 	public List<Ticket> getTicketsByUnit(@PathVariable Long unitId){
+		
+		// TODO Allow supervisors to get tickets for their own units?
+		
 		Unit unit = unitDao.getUnit(unitId);
 		return ticketDao.getTicketsByUnit(unit);
 	}
