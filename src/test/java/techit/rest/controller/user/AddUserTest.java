@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import techit.authentication.AuthenticationHandlerInterceptor;
 import techit.authentication.TokenAuthenticationService;
 import techit.model.User;
+import techit.util.StringUtils;
 
 @Test(groups = "AddUserTest")
 @WebAppConfiguration
@@ -60,11 +61,11 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
-		User user = new User(999L); // For some reason, the ID is not being uniquely generated.
-		user.setUsername("asdf");
-		user.setPassword("asdf");
-		user.setFirstName("Ay Ess");
-		user.setLastName("Dee Eff");
+		User user = new User();
+		user.setUsername("some_username_that_does_not_exist_yet");
+		user.setPassword(StringUtils.random(10));
+		user.setFirstName(StringUtils.random(10));
+		user.setLastName(StringUtils.random(10));
 
 		// TODO Add more fields for testing.
 
