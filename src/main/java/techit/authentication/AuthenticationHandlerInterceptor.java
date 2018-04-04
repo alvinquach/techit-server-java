@@ -17,7 +17,14 @@ public class AuthenticationHandlerInterceptor extends HandlerInterceptorAdapter 
 	
 	private TokenAuthenticationService tokenAuthenticationService;
 	
-	public AuthenticationHandlerInterceptor(@Autowired TokenAuthenticationService tokenAuthenticationService) {
+	/*
+	 * This constructor is unused. It is here just to suppress the error message
+	 * in techit-servlet.xml regarding missing default constructor.
+	 */
+	public AuthenticationHandlerInterceptor() {}
+	
+	@Autowired
+	public AuthenticationHandlerInterceptor(TokenAuthenticationService tokenAuthenticationService) {
 		this.tokenAuthenticationService = tokenAuthenticationService;
 	}
 
