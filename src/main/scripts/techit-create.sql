@@ -1,21 +1,15 @@
 use techit2;
 
-    create table hibernate_sequence (
-       next_val bigint
-    ) engine=InnoDB;
-
-    insert into hibernate_sequence values ( 1 );
-
     create table tickets (
-       id bigint not null,
+       id bigint not null auto_increment,
         completionDetails longtext,
-        createdDate date not null,
+        createdDate datetime not null,
         details longtext,
-        endDate date,
-        lastUpdated date,
+        endDate datetime,
+        lastUpdated datetime,
         location varchar(255),
         priority integer not null,
-        startDate date,
+        startDate datetime,
         status integer not null,
         subject varchar(255) not null,
         createdById bigint not null,
@@ -29,13 +23,13 @@ use techit2;
     ) engine=InnoDB;
 
     create table units (
-       id bigint not null,
+       id bigint not null auto_increment,
         name varchar(255) not null,
         primary key (id)
     ) engine=InnoDB;
 
     create table updates (
-       id bigint not null,
+       id bigint not null auto_increment,
         modifiedDate date not null,
         updateDetails longtext,
         modifiedById bigint not null,
@@ -44,7 +38,7 @@ use techit2;
     ) engine=InnoDB;
 
     create table users (
-       id bigint not null,
+       id bigint not null auto_increment,
         department varchar(255),
         email varchar(255),
         enabled bit not null,
@@ -95,3 +89,4 @@ use techit2;
        add constraint FK1gdvehntuq847hrr9m2y6csln 
        foreign key (unitId) 
        references units (id);
+

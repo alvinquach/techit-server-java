@@ -1,4 +1,4 @@
-package techit.rest.controller.user;
+package techit.rest.controller.ticket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,13 +16,14 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import techit.authentication.TokenAuthenticationService;
-import techit.model.User;
+import techit.model.Priority;
+import techit.model.Ticket;
 import techit.util.StringUtils;
 
-@Test(groups = "AddUserTest")
+@Test(groups = "CreateTicketTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
+public class CreateTicketTest extends AbstractTransactionalTestNGSpringContextTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -45,19 +46,17 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
-		User user = new User();
-		user.setUsername("some_username_that_does_not_exist_yet");
-		user.setPassword(StringUtils.random(10));
-		user.setFirstName(StringUtils.random(10));
-		user.setLastName(StringUtils.random(10));
+		Ticket ticket = new Ticket();
+		ticket.setPriority(Priority.HIGH);
+		ticket.setSubject(StringUtils.random(10));
 
 		// TODO Add more fields for testing.
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
+				.post("/tickets")
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(user));
+				.content(objectMapper.writeValueAsString(ticket));
 
 		String res = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -65,40 +64,24 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 				.getResponse()
 				.getContentAsString();
 
-		User responseObject = objectMapper.readValue(res, User.class);
+		Ticket responseObject = objectMapper.readValue(res, Ticket.class);
 
 		assert responseObject.getId() != null &&
-				responseObject.getUsername().equals(user.getUsername()) &&
-				responseObject.getFirstName().equals(user.getFirstName()) &&
-				responseObject.getLastName().equals(user.getLastName());
-
-	}
-
-	@Test
-	public void testForbidden() throws Exception {
-
-		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
-
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
-				.header("Authorization", jwt)
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(new User()));
-
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
+				responseObject.getPriority() == ticket.getPriority() &&
+				responseObject.getSubject().equals(ticket.getSubject());
 
 	}
 
 	@Test
 	public void testMissingFields() throws Exception {
 
-		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
+				.post("/tickets")
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(new User()));
+				.content(objectMapper.writeValueAsString(new Ticket()));
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
 

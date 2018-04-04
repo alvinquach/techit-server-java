@@ -1,4 +1,4 @@
-package techit.rest.controller.user;
+package techit.rest.controller.unit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,13 +16,13 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import techit.authentication.TokenAuthenticationService;
-import techit.model.User;
+import techit.model.Unit;
 import techit.util.StringUtils;
 
-@Test(groups = "AddUserTest")
+@Test(groups = "AddUnitTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
+public class AddUnitTest extends AbstractTransactionalTestNGSpringContextTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -45,19 +45,16 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
-		User user = new User();
-		user.setUsername("some_username_that_does_not_exist_yet");
-		user.setPassword(StringUtils.random(10));
-		user.setFirstName(StringUtils.random(10));
-		user.setLastName(StringUtils.random(10));
+		Unit unit = new Unit();
+		unit.setName(StringUtils.random(10));
 
 		// TODO Add more fields for testing.
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
+				.post("/units")
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(user));
+				.content(objectMapper.writeValueAsString(unit));
 
 		String res = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -65,12 +62,9 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 				.getResponse()
 				.getContentAsString();
 
-		User responseObject = objectMapper.readValue(res, User.class);
+		Unit responseObject = objectMapper.readValue(res, Unit.class);
 
-		assert responseObject.getId() != null &&
-				responseObject.getUsername().equals(user.getUsername()) &&
-				responseObject.getFirstName().equals(user.getFirstName()) &&
-				responseObject.getLastName().equals(user.getLastName());
+		assert responseObject.getId() != null && responseObject.getName().equals(unit.getName());
 
 	}
 
@@ -80,10 +74,10 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
+				.post("/units")
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(new User()));
+				.content(objectMapper.writeValueAsString(new Unit()));
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
 
@@ -95,10 +89,10 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/users")
+				.post("/units")
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(new User()));
+				.content(objectMapper.writeValueAsString(new Unit()));
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
