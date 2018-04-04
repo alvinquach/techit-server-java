@@ -57,9 +57,14 @@ public class TicketController {
 			throw new MissingFieldsException(ticket);
 		}
 
+		// Auto-populate the created by and created date fields.
 		ticket.setCreatedBy(tokenAuthenticationService.getUserFromRequest(request));
 		ticket.setCreatedDate(new Date());
 
+		// Set ID to null so that we don't accidentally override any existing entries.
+		// Hibernate/database will automatically generate an ID for the new entry.
+		ticket.setId(null);
+		
 		return ticketDao.saveTicket(ticket);
 	}
 
@@ -192,6 +197,8 @@ public class TicketController {
 		if (ticket == null) {
 			throw new RestException(500, "Cannot find Ticket ID " + ticketId);
 		}
+		
+		// TODO Set the ID of the new update to null before saving.
 
 		List<Update> updates = ticket.getUpdates();
 		updates.add(update);

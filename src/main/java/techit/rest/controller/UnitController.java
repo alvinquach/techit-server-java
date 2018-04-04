@@ -45,10 +45,14 @@ public class UnitController {
 	@AllowedUserPositions(Position.SYS_ADMIN)
 	@RequestMapping(method = RequestMethod.POST)
 	public Unit addUnit(@RequestBody Unit unit) {
-
-		if (unit.getId() == null || unit.getName() == null) {
+		
+		if (unit.getName() == null) {
 			throw new MissingFieldsException(unit);
 		}
+		
+		// Set ID to null so that we don't accidentally override any existing entries.
+		// Hibernate/database will automatically generate an ID for the new entry.
+		unit.setId(null); 
 		
 		return unitDao.saveUnit(unit);
 	}

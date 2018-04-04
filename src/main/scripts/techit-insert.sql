@@ -1,3 +1,6 @@
+# We do not have to manually specify the primary key IDs when inserting rows into the tables,
+# but we do so anyways in this script so that we can easily reference rows from other tables.
+
 insert into units values (1, 'cs');
 insert into units values (2, 'me');
 
@@ -44,9 +47,9 @@ insert into tickets (id, status, priority, subject, details, location, unitId, c
 insert into tickets (id, status, priority, subject, details, location, unitId, createdById, createdDate) values
 	(3, 0, 0, 'Test Ticket 3', 'Some description', 'Salazar Hall Entrance', 2, 3, '2018-02-14');
 
-insert into updates (id, modifiedDate, updateDetails, modifiedById, ticketId) values (1, '2018-02-10', 'details of stuff', 1, 1);
-insert into updates (id, modifiedDate, updateDetails, modifiedById, ticketId) values (2, '2018-11-23', 'stuff is in the details', 2, 2);
-insert into updates (id, modifiedDate, updateDetails, modifiedById, ticketId) values (3, '2018-12-13', 'there are some detailed stuff', 2, 1);
+insert into updates (modifiedDate, updateDetails, modifiedById, ticketId) values ('2018-02-10', 'details of stuff', 1, 1);
+insert into updates (modifiedDate, updateDetails, modifiedById, ticketId) values ('2018-11-23', 'stuff is in the details', 2, 2);
+insert into updates (modifiedDate, updateDetails, modifiedById, ticketId) values ('2018-12-13', 'there are some detailed stuff', 2, 1);
 
 insert into tickets_xref_technicians (ticketId, technicianId) values (1, 1);
 insert into tickets_xref_technicians (ticketId, technicianId) values (2, 7);

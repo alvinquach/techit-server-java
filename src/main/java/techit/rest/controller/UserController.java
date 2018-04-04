@@ -59,7 +59,13 @@ public class UserController {
 			throw new MissingFieldsException(user);
 		}
 
+		// Generate a hash of the user's password.
 		user.setHash(passwordEncoder.encode(user.getPassword()));
+		
+		// Set ID to null so that we don't accidentally override any existing entries.
+		// Hibernate/database will automatically generate an ID for the new entry.
+		user.setId(null); 
+		
 		return userDao.saveUser(user);
 	}
 
