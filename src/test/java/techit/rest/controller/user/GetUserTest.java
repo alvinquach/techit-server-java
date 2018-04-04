@@ -56,10 +56,8 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Test
 	public void testOk() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "amgarcia");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String username = "amgarcia";
+		String jwt = tokenAuthenticationService.generateToken(username, "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.get("/users/{userId}", 2)
@@ -72,17 +70,14 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 				.getContentAsString();
 		
 		Map<String, Object> user = objectMapper.readValue(res, new TypeReference<Map<String, Object>>() {});
-		assert user.get("username").equals(credentials.get("username"));
+		assert user.get("username").equals(username);
 			
 	}
 
 	@Test
 	public void testForbidden() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "amgarcia");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.get("/users/{userId}", 1)
@@ -95,10 +90,7 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Test
 	public void testNotFound() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "techit");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.get("/users/{userId}", 999)

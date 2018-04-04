@@ -1,8 +1,5 @@
 package techit.rest.controller.user;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -44,12 +41,12 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Configuration
 	@EnableWebMvc
 	static class AppConfig implements WebMvcConfigurer {
-		
+
 		/** Registers the {@code AuthenticationHandlerInterceptor} as an interceptor to allow it to run inside the unit test. */
 		@Override public void addInterceptors(InterceptorRegistry registry) {
-		    registry.addInterceptor(new AuthenticationHandlerInterceptor(new TokenAuthenticationService())).addPathPatterns("/**");
+			registry.addInterceptor(new AuthenticationHandlerInterceptor(new TokenAuthenticationService())).addPathPatterns("/**");
 		}
-		
+
 	}
 
 	@BeforeClass
@@ -61,10 +58,7 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Test
 	public void testOk() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "techit");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		User user = new User(999L); // For some reason, the ID is not being uniquely generated.
 		user.setUsername("asdf");
@@ -98,10 +92,7 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Test
 	public void testForbidden() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "amgarcia");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.post("/users")
@@ -116,10 +107,7 @@ public class AddUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	@Test
 	public void testMissingFields() throws Exception {
 
-		Map<String, Object> credentials = new HashMap<>();
-		credentials.put("username", "techit");
-		credentials.put("password", "abcd");
-		String jwt = tokenAuthenticationService.generateToken(credentials);
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.post("/users")
