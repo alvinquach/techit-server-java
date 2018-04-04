@@ -1,9 +1,6 @@
 package techit.rest.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,8 +15,8 @@ public class LoginController {
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	@RequestMapping(method = RequestMethod.POST)
-	public String login(@RequestBody Map<String, Object> credentials) {
-		return tokenAuthenticationService.generateToken(credentials);
+	public String login(String username, String password) {
+		return tokenAuthenticationService.generateToken(username, password);
 	}
 
 }

@@ -25,6 +25,7 @@ public class RestExceptionHandler {
     public ResponseEntity<Object> handleOtherExceptions( Exception ex )
     {
         logger.error( "General Error", ex );
+        ex.printStackTrace();
         return new ResponseEntity<Object>(
             new RestError( 500, ex.getMessage() ),
             HttpStatus.INTERNAL_SERVER_ERROR );
