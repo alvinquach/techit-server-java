@@ -18,8 +18,10 @@ public class Unit implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
+	/** Name of the department. */
+	// TODO Should this be unique?
 	@Column(nullable = false)
-	private String name; // name of the department
+	private String name;
 
 	public Long getId() {
 		return id;

@@ -19,6 +19,7 @@ import techit.model.dao.TicketDao;
 import techit.model.dao.UnitDao;
 import techit.model.dao.UserDao;
 import techit.rest.error.MissingFieldsException;
+import techit.util.StringUtils;
 
 @RestController
 @RequestMapping("/units")
@@ -46,7 +47,7 @@ public class UnitController {
 	@RequestMapping(method = RequestMethod.POST)
 	public Unit addUnit(@RequestBody Unit unit) {
 		
-		if (unit.getName() == null) {
+		if (StringUtils.isNullOrEmpty(unit.getName())) {
 			throw new MissingFieldsException(unit);
 		}
 		
