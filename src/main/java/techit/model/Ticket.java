@@ -63,6 +63,8 @@ public class Ticket implements Serializable {
 
 	/** Last date where changes were made to the ticket (edits, technician updates, etc.). */
 	private Date lastUpdated;
+	
+	// TODO Add an updated by field?
 
 	/** The subject line of the ticket. */
 	@Column(nullable = false)

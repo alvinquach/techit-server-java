@@ -13,6 +13,7 @@ import techit.model.Ticket;
 import techit.model.Unit;
 import techit.model.User;
 import techit.model.dao.TicketDao;
+import techit.rest.error.EntityDoesNotExistException;
 
 
 @Repository
@@ -27,15 +28,28 @@ public class TicketDaoImpl implements TicketDao {
 				.getResultList();
 	}
 	
+	
+	/**
+	 * Gets the ticket by ID.
+	 * Note that the technicians list in the {@code Ticket} object are lazy loaded, 
+	 * but are not initialized by this method, so accessing the list will throw an error.
+	 * The technicians must by retrieved separately using {@code getTicketTechnicians()}.
+	 */
+	@Override
+	public Ticket getTicket(Long id) {
+		Ticket ticket = entityManager.find(Ticket.class, id);
+		return ticket;
+	}
+	
+	
+	/** Gets the ticket by ID. Also loads the list of technicians. */
 	@Override
 	@Transactional
-	public Ticket getTicket(Long id) {
+	public Ticket getTicketWithTechnicians(Long id) {
 		Ticket ticket = entityManager.find(Ticket.class, id);
 		if (ticket == null) {
 			return null;
 		}
-		
-		// TODO Split this off into another method.
 		Hibernate.initialize(ticket.getTechnicians());
 		return ticket;
 	}

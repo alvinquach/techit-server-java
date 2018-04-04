@@ -9,9 +9,9 @@ import techit.model.User;
 public interface TicketDao {
 
 	Ticket getTicket(Long id);
-
-	Ticket saveTicket(Ticket ticket);
 	
+	Ticket getTicketWithTechnicians(Long id);
+
 	List<Ticket> getTicketsByCreator(User user);
 	
 	List<Ticket> getTicketsByUnit(Unit unit);
@@ -19,5 +19,7 @@ public interface TicketDao {
 	List<Ticket> getTickets();
 
 	List<Ticket> getTicketsByTechnician(User user);
+	
+	Ticket saveTicket(Ticket ticket);
 
 }

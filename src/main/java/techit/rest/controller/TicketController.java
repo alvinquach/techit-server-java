@@ -2,7 +2,6 @@ package techit.rest.controller;
 
 
 import java.util.Date;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,6 @@ import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
 import techit.rest.error.EntityDoesNotExistException;
 import techit.rest.error.MissingFieldsException;
-import techit.rest.error.RestException;
 import techit.util.StringUtils;
 
 @RestController
@@ -42,7 +40,8 @@ public class TicketController {
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
-	
+	/** Get all tickets. */
+	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Ticket> getTickets() {
 		return ticketDao.getTickets();
@@ -67,9 +66,9 @@ public class TicketController {
 		
 		return ticketDao.saveTicket(ticket);
 	}
-
 	
-	/** Get all tickets. */
+	
+	/** Get a ticket by id. */
 	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}", method = RequestMethod.GET)
 	public Ticket getTicket(@PathVariable Long ticketId) {
@@ -116,31 +115,28 @@ public class TicketController {
 	/** Get the technicians assigned to a ticket. */
 	@RequestMapping(value = "/{ticketId}/technicians", method = RequestMethod.GET)
 	public List<User> getTicketTechnicians(@PathVariable Long ticketId) {
-		Ticket ticket = ticketDao.getTicket(ticketId);
+		Ticket ticket = ticketDao.getTicketWithTechnicians(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
-		
-		// TODO Check if this gives an error due to lazy loading.
-		// If it does, then we may need a new DAO method just for getting technicians.
 		return ticket.getTechnicians();
 	}
 
 	
 	/** Assign a technician to a ticket. */
 	@RequestMapping(value = "/{ticketId}/technicians/{userId}" , method=RequestMethod.PUT)
-	public void addTechnicianToTicket(@PathVariable Long ticketId, @PathVariable Long userId) {
-		Ticket ticket = ticketDao.getTicket(ticketId);
-		
-		// TODO Check if this gives an error due to lazy loading.
-		// If it does, then we may need a new DAO method just for getting technicians.
-		List<User> user = ticket.getTechnicians();
-		
-		// TODO Make sure the technician belongs to the Unit before adding.
-		user.add(userDao.getUser(userId));
-		ticket.setTechnicians(user);
+	public Ticket addTechnicianToTicket(@PathVariable Long ticketId, @PathVariable Long userId) {
+		Ticket ticket = ticketDao.getTicketWithTechnicians(ticketId);
+		if (ticket == null) {
+			throw new EntityDoesNotExistException(Ticket.class);
+		}
+		ticket.getTechnicians().add(userDao.getUser(userId));
+		return ticketDao.saveTicket(ticket);
 	}
 
+	
+	// TODO Add method for removing a technician from a ticket.
+	
 
 	/** 
 	 * Set the status of a ticket.
@@ -148,66 +144,82 @@ public class TicketController {
 	 * this message should be included in the response body.
 	 * Each status change automatically adds an Update to the ticket.
 	 */
+	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}/status/{status}" , method=RequestMethod.PUT)
-	public void setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
+	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
 
-		User user = tokenAuthenticationService.getUserFromRequest(request);
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
 		Ticket ticket = ticketDao.getTicket(ticketId);
 		if (ticket == null) {
-			throw new RestException(500, "Cannot find Ticket ID " + ticketId);
+			throw new EntityDoesNotExistException(Ticket.class);
 		}
+		
+		Date current = new Date();
 
+		// Update the ticket properties.
 		ticket.setStatus(status);
+		ticket.setLastUpdated(current);
 
-		List<Update> updates = ticket.getUpdates();
-		Update update= new Update(); 
-		update.setUpdateDetails(description);
+		// Create a new update to document the status change and add it to the ticket.
+		Update update = new Update(); 
+		update.setUpdateDetails(description); // TODO Add status change to the description
 		update.setTicket(ticket);
-		Calendar calendar = Calendar.getInstance();
-		java.util.Date currentDate = calendar.getTime();
-		java.sql.Date date = new java.sql.Date(currentDate.getTime());
-		update.setModifiedDate(date);
-		update.setModifiedBy(user);
-		updates.add(update);
-		ticket.setUpdates(updates);
+		update.setModifiedDate(current);
+		update.setModifiedBy(requestor);
+		ticket.getUpdates().add(update);
 
-		ticketDao.saveTicket(ticket);
+		return ticketDao.saveTicket(ticket);
 
 	}
 
 	
 	/** Set the priority of a ticket. */
 	@RequestMapping(value = "/{ticketId}/priority/{priority}" , method=RequestMethod.PUT)
-	public void setTicketPriority(@PathVariable Long ticketId, @PathVariable Priority priority) {
+	public Ticket setTicketPriority(@PathVariable Long ticketId, @PathVariable Priority priority) {
+		
 		Ticket ticket = ticketDao.getTicket(ticketId);
+		if (ticket == null) {
+			throw new EntityDoesNotExistException(Ticket.class);
+		}
+		
 		ticket.setPriority(priority);
-		ticketDao.saveTicket(ticket);
-
+		ticket.setLastUpdated(new Date());
+		
+		return ticketDao.saveTicket(ticket);
+		
 	}
 
 
 	/** Add an Update to a ticket. */
 	@RequestMapping(value = "/{ticketId}/update" , method=RequestMethod.POST)
-	public void addUpdateToTicket(HttpServletRequest request, @PathVariable Long ticketId, @RequestBody Update update) {
+	public Ticket addUpdateToTicket(HttpServletRequest request, @PathVariable Long ticketId, @RequestBody Update update) {
 
-		User user = tokenAuthenticationService.getUserFromRequest(request);
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
 		Ticket ticket = ticketDao.getTicket(ticketId);
 		if (ticket == null) {
-			throw new RestException(500, "Cannot find Ticket ID " + ticketId);
+			throw new EntityDoesNotExistException(Ticket.class);
 		}
 		
-		// TODO Set the ID of the new update to null before saving.
+		Date current = new Date();
 
-		List<Update> updates = ticket.getUpdates();
-		updates.add(update);
-		ticket.setUpdates(updates);
-		ticketDao.saveTicket(ticket);
+		// Update the ticket properties.
+		ticket.setLastUpdated(current);
+
+		// Set ID to null so that we don't accidentally override any existing entries.
+		// Hibernate/database will automatically generate an ID for the new entry.
+		update.setId(null);
+		
+		update.setModifiedDate(current);
+		update.setModifiedBy(requestor);
+		
+		update.setTicket(ticket);
+		ticket.getUpdates().add(update);
+		
+		return ticketDao.saveTicket(ticket);
 
 	}
 
 
-
 }
-
