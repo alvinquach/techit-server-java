@@ -3,7 +3,6 @@ package techit.rest.controller.user;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -13,8 +12,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -37,14 +34,6 @@ public class GetUserTest extends AbstractTransactionalTestNGSpringContextTests {
 	private MockMvc mockMvc;
 	
 	private ObjectMapper objectMapper;
-
-	@Configuration
-	@EnableWebMvc
-	static class AppConfig implements WebMvcConfigurer {
-		
-		// This test does not require the AuthenticationHandlerInterceptor.
-		
-	}
 
 	@BeforeClass
 	private void setup() {
