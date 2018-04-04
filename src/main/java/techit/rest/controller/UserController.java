@@ -39,7 +39,7 @@ public class UserController {
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
-	// TODO Should this also be only accessible by admins?
+	@AllowedUserPositions(Position.SYS_ADMIN)
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	public List<User> getUsers() {
 		return userDao.getUsers();
