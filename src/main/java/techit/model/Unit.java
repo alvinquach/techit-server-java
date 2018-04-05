@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "units")
-public class Unit implements Serializable{
+public class Unit implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -22,6 +22,12 @@ public class Unit implements Serializable{
 	// TODO Should this be unique?
 	@Column(nullable = false)
 	private String name;
+	
+	public Unit() {}
+	
+	public Unit(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;

@@ -63,9 +63,9 @@ public class UnitController {
 	public List<User> getTechniciansByUnit(@PathVariable Long unitId){
 		
 		// TODO Allow supervisors to get technicians for their own units?
+		// Do supervisors also count as a technician?
 		
-		Unit unit = unitDao.getUnit(unitId);
-		return userDao.getTechniciansByUnit(unit);
+		return userDao.getTechniciansByUnit(new Unit(unitId));
 	}
 	
 	@AllowedUserPositions(Position.SYS_ADMIN)
@@ -74,7 +74,6 @@ public class UnitController {
 		
 		// TODO Allow supervisors to get tickets for their own units?
 		
-		Unit unit = unitDao.getUnit(unitId);
-		return ticketDao.getTicketsByUnit(unit);
+		return ticketDao.getTicketsByUnit(new Unit(unitId));
 	}
 }
