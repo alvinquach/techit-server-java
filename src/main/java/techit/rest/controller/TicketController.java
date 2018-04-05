@@ -85,12 +85,12 @@ public class TicketController {
 	 * should not be changed (ie. createdBy and createdDate).
 	 */
 	@RequestMapping(value = "/{ticketId}", method = RequestMethod.PUT)
-	public Ticket updateTicket(@PathVariable Long id, @RequestBody Ticket ticket) {
-
+	public Ticket updateTicket(@PathVariable Long ticketId, @RequestBody Ticket ticket) {
+		
 		// TODO Limit the users that can edit a ticket.
-
-		Ticket target = ticketDao.getTicket(id);
-
+		
+		Ticket target = ticketDao.getTicket(ticketId);
+		
 		if (target == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
