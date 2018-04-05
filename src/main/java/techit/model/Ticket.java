@@ -210,9 +210,19 @@ public class Ticket implements Serializable {
 	public void setCompletionDetails(String completionDetails) {
 		this.completionDetails = completionDetails;
 	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Ticket)) {
+			return false;
+		}
+		if (id == null || ((Ticket)o).getId() == null) {
+			return false;
+		}
+		return id.equals(((Ticket)o).getId());
 	}
 
 }

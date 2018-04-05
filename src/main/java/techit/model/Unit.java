@@ -44,5 +44,19 @@ public class Unit implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Unit)) {
+			return false;
+		}
+		if (id == null || ((Unit)o).getId() == null) {
+			return false;
+		}
+		return id.equals(((Unit)o).getId());
+	}
 
 }

@@ -169,4 +169,18 @@ public class User implements Serializable {
 		this.unit = unit;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof User)) {
+			return false;
+		}
+		if (id == null || ((User)o).getId() == null) {
+			return false;
+		}
+		return id.equals(((User)o).getId());
+	}
+	
 }
