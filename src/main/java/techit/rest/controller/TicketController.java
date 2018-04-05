@@ -19,12 +19,14 @@ import techit.model.Position;
 import techit.model.Priority;
 import techit.model.Status;
 import techit.model.Ticket;
+import techit.model.Unit;
 import techit.model.Update;
 import techit.model.User;
 import techit.model.dao.TicketDao;
 import techit.model.dao.UserDao;
 import techit.rest.error.EntityDoesNotExistException;
 import techit.rest.error.MissingFieldsException;
+import techit.rest.error.RestException;
 import techit.util.StringUtils;
 
 @RestController
@@ -123,21 +125,61 @@ public class TicketController {
 	}
 
 	
-	/** Assign a technician to a ticket. */
+	/**
+	 * Assigns/removes a technician to a ticket.
+	 * If the technician ID does not yet exist on the ticket, then they will be added.
+	 * If the technician ID already exists on the ticket, then they will be removed.
+	 * A technician can only be added if they belong to the unit that is assigned to the ticket.
+	 */
 	@RequestMapping(value = "/{ticketId}/technicians/{userId}" , method=RequestMethod.PUT)
-	public Ticket addTechnicianToTicket(@PathVariable Long ticketId, @PathVariable Long userId) {
+	public Ticket assignTechnicianToTicket(@PathVariable Long ticketId, @PathVariable Long userId) {
+		
 		Ticket ticket = ticketDao.getTicketWithTechnicians(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
-		ticket.getTechnicians().add(userDao.getUser(userId));
-		return ticketDao.saveTicket(ticket);
+		
+		// Check if the user is already assigned to the ticket.
+		User technician = ticket.getTechnicians().stream()
+				.filter(user -> user.getId().equals(userId))
+				.findFirst()
+				.orElse(null);
+		
+		// If they are, then remove them from the ticket and save the ticket.
+		if (technician != null) {
+			ticket.getTechnicians().remove(technician);
+			return ticketDao.saveTicket(ticket);
+		}
+		
+		// To add a technician, we must first check if the technician is a technician and belongs to the unit.
+		Unit unit = ticket.getUnit();
+		if (unit != null) {
+			List<User> unitTechnicians = userDao.getTechniciansByUnit(unit);
+			
+			technician = unitTechnicians.stream()
+					.filter(user -> user.getId().equals(userId))
+					.findFirst()
+					.orElse(null);
+			
+			if (technician == null) {
+				throw new RestException(400, "User does not belong to the unit that is assigned to the ticket.");
+			}
+			
+			if (technician.getPosition() != Position.TECHNICIAN) {
+				throw new RestException(400, "User is not a technician.");
+			}
+			
+			ticket.getTechnicians().add(technician);
+			return ticketDao.saveTicket(ticket);
+			
+		}
+		
+		// TODO Is the the correct way to handle this case?
+		throw new RestException(400, "The ticket is not assigned to any unit.");
+		
 	}
 
 	
-	// TODO Add method for removing a technician from a ticket.
-	
-
 	/** 
 	 * Set the status of a ticket.
 	 * Some status changes require a message explaining the reason of the change - 
