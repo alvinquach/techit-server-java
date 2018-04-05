@@ -1,18 +1,20 @@
 package techit.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -23,14 +25,23 @@ public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(nullable = false, unique = true)
 	private String username;
 
 	@JsonProperty(access = Access.WRITE_ONLY)
-	@Column(nullable = false)
+	@Column(nullable = false, length = 60)
+	private String hash;
+
+	/** 
+	 * The user's plaintext password. This property is transient, so it does not get stored in the database.
+	 * Also, instead of being a write only property, it is serialized as long as the value is not null.
+	 * This will allow {@code User} objects to be manually serialized in the unit tests and still include the password.
+	 */
+	@Transient
+	@JsonInclude(Include.NON_NULL)
 	private String password;
 
 	@Column(nullable = false)
@@ -48,16 +59,19 @@ public class User implements Serializable {
 
 	private String department;
 
-	@OneToMany(mappedBy = "requester")
-	private List<Ticket> tickets; // regarding requesters specifically
-
 	@Enumerated
 	@Column(nullable = false)
-	private Position status = Position.USER;
+	private Position position = Position.USER;
 
 	@ManyToOne
 	@JoinColumn(name="unitId")
 	private Unit unit; // unit to which this user belongs to
+
+	public User() {}
+
+	public User(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;
@@ -73,6 +87,14 @@ public class User implements Serializable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
 	}
 
 	public String getPassword() {
@@ -131,20 +153,12 @@ public class User implements Serializable {
 		this.department = department;
 	}
 
-	public List<Ticket> getTickets() {
-		return tickets;
+	public Position getPosition() {
+		return position;
 	}
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
-	}
-
-	public Position getStatus() {
-		return status;
-	}
-
-	public void setStatus(Position status) {
-		this.status = status;
+	public void setPosition(Position position) {
+		this.position = position;
 	}
 
 	public Unit getUnit() {
@@ -153,12 +167,6 @@ public class User implements Serializable {
 
 	public void setUnit(Unit unit) {
 		this.unit = unit;
-	}
-
-	@Override
-	public String toString()
-	{
-		return "[" + id + ", " + username + ", " + password + "]";
 	}
 
 }
