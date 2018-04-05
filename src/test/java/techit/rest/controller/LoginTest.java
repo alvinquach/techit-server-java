@@ -1,10 +1,6 @@
 package techit.rest.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -14,14 +10,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import techit.authentication.TokenAuthenticationService;
+import techit.model.User;
 
 /** Tests the {@code login()} method in the {@code LoginController}. */
 @Test(groups = "LoginTest")
@@ -31,61 +24,50 @@ public class LoginTest extends AbstractTransactionalTestNGSpringContextTests {
 
 	@Autowired
 	private WebApplicationContext wac;
+	
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
 
 	private MockMvc mockMvc;
-
-	private ObjectMapper objectMapper;
-
-	@Configuration
-	@EnableWebMvc
-	static class ContextConfiguration {
-
-	}
 
 	@BeforeClass
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-		objectMapper = new ObjectMapper();
 	}
 
 	@Test
 	public void testSuccess() throws Exception {
 
-		Map<String, String> credentials = new HashMap<>();
-		credentials.put("username", "techit");
-		credentials.put("password", "abcd");
+		String username = "techit";
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.post("/login")
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(credentials));
+				.param("username", username)
+				.param("password", "abcd");
 
 		String jwt = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn()
 				.getResponse()
 				.getContentAsString();
-
-		Claims claims = Jwts.parser()
-				.setSigningKey("secret") // TODO Un-hardcode this
-				.parseClaimsJws(jwt.substring(7))
-				.getBody();
+	
+		if (!jwt.startsWith("Bearer ")) {
+			assert false;
+		}
 		
-		assert jwt.startsWith("Bearer ") && claims.get("username").equals(credentials.get("username"));
+		User authenticatedUser = tokenAuthenticationService.getUserFromToken(jwt.substring(7));
+		
+		assert authenticatedUser.getUsername().equals(username);
 		
 	}
 	
 	@Test
 	public void testFailure() throws Exception {
 
-		Map<String, String> credentials = new HashMap<>();
-		credentials.put("username", "techit");
-		credentials.put("password", "wrong password");
-
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.post("/login")
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(credentials));
+				.param("username", "techit")
+				.param("password", "wrong password");
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isUnauthorized());
 	
