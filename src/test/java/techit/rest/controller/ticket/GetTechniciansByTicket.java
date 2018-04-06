@@ -1,4 +1,4 @@
-package techit.rest.controller;
+package techit.rest.controller.ticket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,64 +13,50 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import techit.authentication.TokenAuthenticationService;
-import techit.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/** Tests the {@code login()} method in the {@code LoginController}. */
-@Test(groups = "LoginTest")
+import techit.authentication.TokenAuthenticationService;
+
+
+@Test(groups = "GetTechniciansByTicket")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class LoginTest extends AbstractTransactionalTestNGSpringContextTests {
-
+public class GetTechniciansByTicket extends AbstractTransactionalTestNGSpringContextTests{
 	@Autowired
 	private WebApplicationContext wac;
-	
+
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	private MockMvc mockMvc;
 
+	private ObjectMapper objectMapper;
+
 	@BeforeClass
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-	}
-
-	@Test
-	public void testSuccess() throws Exception {
-
-		String username = "techit";
-
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/login")
-				.param("username", username)
-				.param("password", "abcd");
-
-		String jwt = mockMvc.perform(builder)
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
-	
-		if (!jwt.startsWith("Bearer ")) {
-			assert false;
-		}
-		
-		User authenticatedUser = tokenAuthenticationService.getUserFromToken(jwt.substring(7));
-		
-		assert authenticatedUser.getUsername().equals(username);
-		
+		objectMapper = new ObjectMapper();
 	}
 	
 	@Test
-	public void testFailure() throws Exception {
-
+	public void testOk() throws Exception{
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/login")
-				.param("username", "techit")
-				.param("password", "wrong password");
+				.get("/tickets/{ticketId}/technicians",1)
+				.header("Authorization", jwt);
 
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isUnauthorized());
-	
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isOk());
 	}
+	
+	@Test
+	public void missingTicket() throws Exception{
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.get("/tickets/{ticketId}/technicians",4)
+				.header("Authorization", jwt);
 
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
 }

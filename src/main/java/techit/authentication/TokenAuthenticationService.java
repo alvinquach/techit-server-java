@@ -16,6 +16,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import techit.model.Position;
+import techit.model.Unit;
 import techit.model.User;
 import techit.model.dao.UserDao;
 import techit.rest.error.RestException;
@@ -62,12 +63,15 @@ public class TokenAuthenticationService {
 
 	public String generateToken(String username, String password) {
 		if(username != null && password != null) {
-			User user = userDao.getUserByUsername((String)username);
-			if (user != null && passwordEncoder.matches((String)password, user.getHash())) {
+			User user = userDao.getUserByUsername(username);
+			if (user != null && passwordEncoder.matches(password, user.getHash())) {
 				Map<String, Object> claims = new HashMap<>();
-				claims.put("username", username);
-				claims.put("type", user.getPosition());
 				claims.put("id", user.getId());
+				claims.put("username", username);
+				claims.put("position", user.getPosition());
+				if (user.getUnit() != null) {
+					claims.put("unitId", user.getUnit().getId());
+				}
 				String jwt = Jwts.builder()
 						.setClaims(claims)
 						.signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -102,8 +106,11 @@ public class TokenAuthenticationService {
 				.parseClaimsJws(token)
 				.getBody();
 		user.setUsername((String)claims.get("username"));
-		user.setPosition(Position.valueOf((String)claims.get("type")));
+		user.setPosition(Position.valueOf((String)claims.get("position")));
 		user.setId(Long.valueOf(claims.get("id").toString()));
+		if (claims.get("unitId") != null) {
+			user.setUnit(new Unit(Long.valueOf(claims.get("unitId").toString())));
+		}
 		return user;
 	}
 

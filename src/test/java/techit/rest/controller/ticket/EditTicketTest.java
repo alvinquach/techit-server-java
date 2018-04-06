@@ -1,4 +1,4 @@
-package techit.rest.controller;
+package techit.rest.controller.ticket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -13,64 +13,65 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import techit.authentication.TokenAuthenticationService;
-import techit.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/** Tests the {@code login()} method in the {@code LoginController}. */
-@Test(groups = "LoginTest")
+import techit.authentication.TokenAuthenticationService;
+import techit.model.Priority;
+import techit.model.Status;
+import techit.model.Ticket;
+import techit.util.StringUtils;
+
+
+@Test(groups = "EditTicketTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class LoginTest extends AbstractTransactionalTestNGSpringContextTests {
-
+public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTests{
+	
 	@Autowired
 	private WebApplicationContext wac;
-	
+
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	private MockMvc mockMvc;
 
+	private ObjectMapper objectMapper;
+
 	@BeforeClass
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+		objectMapper = new ObjectMapper();
 	}
-
+	
 	@Test
-	public void testSuccess() throws Exception {
-
-		String username = "techit";
-
+	public void testOk() throws Exception{
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		
+		Ticket ticket = new Ticket();
+		ticket.setPriority(Priority.MEDIUM);
+		ticket.setSubject(StringUtils.random(10));
+		ticket.setDetails("Fixed projector in A309");
+		ticket.setLocation("A309");
+		
+		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/login")
-				.param("username", username)
-				.param("password", "abcd");
+				.put("/tickets/{ticketId}", 1L)
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(ticket));
 
-		String jwt = mockMvc.perform(builder)
+		String res = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn()
 				.getResponse()
 				.getContentAsString();
-	
-		if (!jwt.startsWith("Bearer ")) {
-			assert false;
-		}
-		
-		User authenticatedUser = tokenAuthenticationService.getUserFromToken(jwt.substring(7));
-		
-		assert authenticatedUser.getUsername().equals(username);
-		
+
+		Ticket responseObject = objectMapper.readValue(res, Ticket.class);
+
+		assert responseObject.getId() != null &&
+				responseObject.getPriority() == ticket.getPriority() &&
+				responseObject.getSubject().equals(ticket.getSubject()) &&
+				responseObject.getDetails().equals(ticket.getDetails()) &&
+				responseObject.getLocation().equals(ticket.getLocation());
 	}
-	
-	@Test
-	public void testFailure() throws Exception {
-
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/login")
-				.param("username", "techit")
-				.param("password", "wrong password");
-
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isUnauthorized());
-	
-	}
-
 }
