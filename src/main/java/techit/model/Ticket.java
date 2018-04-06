@@ -78,8 +78,8 @@ public class Ticket implements Serializable {
 	private String location;
 
 	/** The unit assigned to the ticket. */
-	@ManyToOne 
-	@JoinColumn(name="unitId") 
+	@ManyToOne
+	@JoinColumn(name="unitId", nullable = false) 
 	private Unit unit;
 	
 	/** List of Updates made to the ticket. */
