@@ -302,7 +302,7 @@ public class TicketController {
 
 	/** Add an Update to a ticket. */
 	@RequestMapping(value = "/{ticketId}/update" , method=RequestMethod.POST)
-	public Ticket addUpdateToTicket(HttpServletRequest request, @PathVariable Long ticketId, @RequestBody Update update) {
+	public List<Update> addUpdateToTicket(HttpServletRequest request, @PathVariable Long ticketId, @RequestBody Update update) {
 
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
@@ -325,8 +325,9 @@ public class TicketController {
 
 		update.setTicket(ticket);
 		ticket.getUpdates().add(update);
+		ticketDao.saveTicket(ticket);
 
-		return ticketDao.saveTicket(ticket);
+		return ticket.getUpdates();
 
 	}
 	
