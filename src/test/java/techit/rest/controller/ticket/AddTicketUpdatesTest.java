@@ -1,5 +1,8 @@
 package techit.rest.controller.ticket;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
@@ -13,25 +16,27 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import techit.authentication.TokenAuthenticationService;
-import techit.model.Priority;
-import techit.model.Status;
 import techit.model.Ticket;
-import techit.util.StringUtils;
+import techit.model.Update;
+import techit.model.dao.TicketDao;
 
-
-@Test(groups = "EditTicketTest")
+@Test(groups = "AddTicketUpdatesTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTests{
-	
+public class AddTicketUpdatesTest extends AbstractTransactionalTestNGSpringContextTests{
+
 	@Autowired
 	private WebApplicationContext wac;
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
+	
+	@Autowired
+	private TicketDao ticketDao;
 
 	private MockMvc mockMvc;
 
@@ -46,52 +51,38 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 	@Test
 	public void testOk() throws Exception{
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		Ticket ticket = ticketDao.getTicket(1L);
+		int initialUpdatesSize = ticket.getUpdates().size();
 		
-		Ticket ticket = new Ticket();
-		ticket.setPriority(Priority.MEDIUM);
-		ticket.setSubject(StringUtils.random(10));
-		ticket.setDetails("Fixed projector in A309");
-		ticket.setLocation("A309");
-		
+		Update update = new Update();
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.put("/tickets/{ticketId}", 1L)
+				.post("/tickets/{ticketId}/update", 1L)
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(ticket));
+				.content(objectMapper.writeValueAsString(update));
 
 		String res = mockMvc.perform(builder)
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn()
 				.getResponse()
 				.getContentAsString();
-
-		Ticket responseObject = objectMapper.readValue(res, Ticket.class);
-
-		assert responseObject.getId() != null &&
-				responseObject.getPriority() == ticket.getPriority() &&
-				responseObject.getSubject().equals(ticket.getSubject()) &&
-				responseObject.getDetails().equals(ticket.getDetails()) &&
-				responseObject.getLocation().equals(ticket.getLocation());
+		
+		List<Update> responseObject = objectMapper.readValue(res, new TypeReference<List<Update>>() {});
+		assert responseObject.size() == initialUpdatesSize + 1;
 	}
 	
-	
 	@Test
-	public void missingTicket() throws Exception {
+	public void testFailure() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 		
-		Ticket ticket = new Ticket();
-		ticket.setPriority(Priority.MEDIUM);
-		ticket.setSubject(StringUtils.random(10));
-		ticket.setDetails("Fixed projector in A309");
-		ticket.setLocation("A309");
-		
+		Update update = new Update();
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.put("/tickets/{ticketId}", 4L)
+				.post("/tickets/{ticketId}/update", 4L)
 				.header("Authorization", jwt)
 				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(ticket));
+				.content(objectMapper.writeValueAsString(update));
 		
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isNotFound());
 	}
