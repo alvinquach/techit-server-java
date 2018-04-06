@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.annotations.Test;
 
 import techit.model.Position;
@@ -12,6 +13,7 @@ import techit.model.Unit;
 import techit.model.User;
 
 @Test(groups = "UserDaoTest")
+@WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
 public class UserDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 
@@ -125,30 +127,5 @@ public class UserDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 		
 		assert true;
 	}
-	@Test
-	public void getSupervisorsByUnit() {
-		
-		// Create a unit for querying.
-		Unit unit = new Unit();
-		unit.setId(1L);
-		
-		// Query for the users.
-		List<User> users = userDao.getSupervisorsByUnit(unit);
-		
-		System.out.println(users.size());
-		// There is only 1 supervisor in current database
-		if (users.size() < 1 )  {
-			assert false;
-		}
-		
-		// Check if the unit's ID in each of the users match that of the queried unit.
-		for (User user : users) {
-		
-			if (user.getUnit() == null || user.getUnit().getId() != unit.getId()) {
-				assert false;
-			}
-		}
-		
-		assert true;
-	}
+
 }

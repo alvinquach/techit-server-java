@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.annotations.Test;
 
 import techit.model.Priority;
@@ -14,6 +15,7 @@ import techit.model.Unit;
 import techit.model.User;
 
 @Test(groups = "TicketDaoTest")
+@WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
 public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 

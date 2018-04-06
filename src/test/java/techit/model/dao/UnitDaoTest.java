@@ -3,11 +3,13 @@ package techit.model.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.testng.annotations.Test;
 
 import techit.model.Unit;
 
 @Test(groups = "UnitDaoTest")
+@WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
 public class UnitDaoTest extends AbstractTransactionalTestNGSpringContextTests {
 	
