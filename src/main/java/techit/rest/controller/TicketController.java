@@ -197,7 +197,7 @@ public class TicketController {
 	 * Regular users cannot access this method.
 	 */
 	@RequestMapping(value = "/{ticketId}/technicians/{userId}" , method=RequestMethod.DELETE)
-	public Collection<User> removeTechniciansFromTicket(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Long userId) {
+	public Collection<User> removeTechnicianFromTicket(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Long userId) {
 
 		// Regular users cannot access this method, no matter what.
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
