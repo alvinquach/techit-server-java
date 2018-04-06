@@ -1,8 +1,11 @@
 package techit.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,11 +33,11 @@ public class Ticket implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	/** List of technicians assigned to the ticket. */
+	/** Set of technicians assigned to the ticket. */
 	@JsonIgnore
 	@ManyToMany
 	@JoinTable(name = "tickets_xref_technicians", joinColumns = @JoinColumn(name = "ticketId"), inverseJoinColumns = @JoinColumn(name = "technicianId"))
-	private List<User> technicians;
+	private Set<User> technicians = new HashSet<>();
 
 	/** The current status of the ticket. */
 	@Enumerated
@@ -85,7 +88,7 @@ public class Ticket implements Serializable {
 	/** List of Updates made to the ticket. */
 	@JsonIgnore
 	@OneToMany(mappedBy = "ticket")
-	private List<Update> updates;
+	private List<Update> updates = new ArrayList<>();
 
 	/** Information pertaining to vendors, costs, materials used, etc. */
 	@Lob
@@ -99,11 +102,11 @@ public class Ticket implements Serializable {
 		this.id = id;
 	}
 
-	public List<User> getTechnicians() {
+	public Set<User> getTechnicians() {
 		return technicians;
 	}
 
-	public void setTechnicians(List<User> technicians) {
+	public void setTechnicians(Set<User> technicians) {
 		this.technicians = technicians;
 	}
 
@@ -210,9 +213,24 @@ public class Ticket implements Serializable {
 	public void setCompletionDetails(String completionDetails) {
 		this.completionDetails = completionDetails;
 	}
-
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Ticket)) {
+			return false;
+		}
+		if (id == null || ((Ticket)o).getId() == null) {
+			return false;
+		}
+		return id.equals(((Ticket)o).getId());
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (id * 3 + 5);
 	}
 
 }

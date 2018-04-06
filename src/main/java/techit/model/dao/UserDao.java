@@ -20,8 +20,6 @@ public interface UserDao {
 
     List<User> getTechniciansByUnit(Unit unit);
     
-    List<User> getSupervisorsByUnit(Unit unit);
-
     User saveUser(User user);
 
 }
