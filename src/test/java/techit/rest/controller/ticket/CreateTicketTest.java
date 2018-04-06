@@ -1,6 +1,7 @@
 package techit.rest.controller.ticket;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -15,9 +16,38 @@ import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.test.web.servlet.ResultActions;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Mockito.when;
+
+
+
+
+import static org.junit.Assert.fail;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
+
+
 import techit.authentication.TokenAuthenticationService;
 import techit.model.Priority;
 import techit.model.Ticket;
+import techit.model.Unit;
+import techit.rest.controller.TicketController;
+import techit.rest.error.RestException;
 import techit.util.StringUtils;
 
 @Test(groups = "CreateTicketTest")
@@ -47,13 +77,17 @@ public class CreateTicketTest extends AbstractTransactionalTestNGSpringContextTe
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		Ticket ticket = new Ticket();
-		ticket.setPriority(Priority.HIGH);
+		ticket.setPriority(Priority.MEDIUM);
 		ticket.setSubject(StringUtils.random(10));
-
-		// TODO Add more fields for testing.
-
+		ticket.setDetails("IT Network problems");
+		ticket.setLocation("ET320");
+		Unit unit = new Unit();
+		unit.setName(StringUtils.random(10));
+		ticket.setUnit(unit);
+		
+		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/tickets")
+				.put("/tickets/{ticketId}", 1L)
 				.header("Authorization", jwt)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(ticket));
@@ -68,14 +102,20 @@ public class CreateTicketTest extends AbstractTransactionalTestNGSpringContextTe
 
 		assert responseObject.getId() != null &&
 				responseObject.getPriority() == ticket.getPriority() &&
-				responseObject.getSubject().equals(ticket.getSubject());
-
+				responseObject.getSubject().equals(ticket.getSubject()) &&
+				responseObject.getDetails().equals(ticket.getDetails()) &&
+				responseObject.getLocation().equals(ticket.getLocation());
 	}
 
 	@Test
-	public void testMissingFields() throws Exception {
+	public void testMissingTicketFields() throws Exception {
 
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		Ticket ticket = new Ticket();
+		Unit unit = new Unit();
+		unit.setName(StringUtils.random(10));
+		ticket.setUnit(unit);
+		
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.post("/tickets")
@@ -86,5 +126,35 @@ public class CreateTicketTest extends AbstractTransactionalTestNGSpringContextTe
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
 	}
+	
+	
+
+//	We have in mind that the user must include unit within ticket. 
+	@Test
+	public void testMissingUnitFields() throws Exception {
+
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		Unit unit = new Unit();
+		unit = null;
+		Ticket ticket = new Ticket();
+		ticket.setPriority(Priority.MEDIUM);
+		ticket.setSubject(StringUtils.random(10));
+		ticket.setDetails("IT Network problems");
+		ticket.setLocation("ET320");
+		ticket.setUnit(unit);
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.post("/tickets")
+				.header("Authorization", jwt)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(new Ticket()));		
+		mockMvc.perform(builder)
+		.andDo(MockMvcResultHandlers.print())
+		.andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+	}
+	
+
+//www.springboottutorial.com/unit-testing-for-sprng-boot-rest-services
 
 }
