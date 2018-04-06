@@ -73,6 +73,20 @@ public class AddTicketUpdatesTest extends AbstractTransactionalTestNGSpringConte
 	}
 	
 	@Test
+	public void testForbidden() throws Exception {
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		Update update = new Update();
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.post("/tickets/{ticketId}/update", 3L)
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(update));
+		
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+	
+	@Test
 	public void testFailure() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 		
