@@ -197,7 +197,7 @@ public class TicketController {
 	 * Regular users cannot access this method.
 	 */
 	@RequestMapping(value = "/{ticketId}/technicians/{userId}" , method=RequestMethod.DELETE)
-	public Collection<User> removeTechniciansFromTicket(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Long userId) {
+	public Collection<User> removeTechnicianFromTicket(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Long userId) {
 
 		// Regular users cannot access this method, no matter what.
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
@@ -310,7 +310,17 @@ public class TicketController {
 		return ticket.getUpdates();
 
 	}
+	
+	
+	/**
+	 * Helper method for determining whether the user has permissions to edit the ticket in general.
+	 * Non-admins can only edit tickets that belong to their unit.
+	 */
+	private boolean hasPermissionToEditTicket(User requestor, Ticket ticket) {
+		return requestor.getPosition() == Position.SYS_ADMIN || ticket.getUnit().equals(requestor.getUnit());
+	}
 
+	
 	/**
 	 * Helper method for determining whether the user has permissions to change the technician assignment of a ticket.
 	 * Non-admins can only change technician assignments of tickets that belong to their unit.
