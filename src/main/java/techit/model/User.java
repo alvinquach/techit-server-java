@@ -183,4 +183,9 @@ public class User implements Serializable {
 		return id.equals(((User)o).getId());
 	}
 	
+	@Override
+	public int hashCode() {
+		return (int) (id * 7 + 11);
+	}
+	
 }

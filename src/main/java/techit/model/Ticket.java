@@ -227,5 +227,10 @@ public class Ticket implements Serializable {
 		}
 		return id.equals(((Ticket)o).getId());
 	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (id * 3 + 5);
+	}
 
 }

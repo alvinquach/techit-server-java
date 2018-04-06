@@ -58,5 +58,10 @@ public class Unit implements Serializable {
 		}
 		return id.equals(((Unit)o).getId());
 	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (id * 13 + 17);
+	}
 
 }
