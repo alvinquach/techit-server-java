@@ -233,9 +233,8 @@ public class TicketController {
 	 * this message should be included in the response body.
 	 * Each status change automatically adds an Update to the ticket.
 	 */
-	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}/status/{status}" , method=RequestMethod.PUT)
-	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
+	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody(required = false) String description) {
 
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
@@ -243,16 +242,37 @@ public class TicketController {
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
+		
+		if (!hasPermissionToEditTicket(requestor, ticket)) {
+			throw new RestException(403, "You do not have permission to modify the ticket.");
+		}
+		
+		if (StringUtils.isNullOrEmpty(description)) {
+			// TODO Find out which status change require the description.
+			// For now, we just require description for all status changes.
+			throw new RestException(400, "Description of the status change is required.");
+		}
+		
+		// Check if the status was changed.
+		if (ticket.getStatus() == status) {
+			throw new RestException(400, "Status was already " + status.getValue() + ".");
+		}
 
 		Date current = new Date();
 
 		// Update the ticket properties.
 		ticket.setStatus(status);
 		ticket.setLastUpdated(current);
+		
+		StringBuilder changeDetails = new StringBuilder()
+		.append("Status changed to ")
+		.append(status.getValue())
+		.append(". Reason: ")
+		.append(description);
 
 		// Create a new update to document the status change and add it to the ticket.
 		Update update = new Update(); 
-		update.setUpdateDetails(description); // TODO Add status change to the description
+		update.setUpdateDetails(changeDetails.toString());
 		update.setTicket(ticket);
 		update.setModifiedDate(current);
 		update.setModifiedBy(requestor);
