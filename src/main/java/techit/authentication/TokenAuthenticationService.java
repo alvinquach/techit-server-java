@@ -63,8 +63,8 @@ public class TokenAuthenticationService {
 
 	public String generateToken(String username, String password) {
 		if(username != null && password != null) {
-			User user = userDao.getUserByUsername((String)username);
-			if (user != null && passwordEncoder.matches((String)password, user.getHash())) {
+			User user = userDao.getUserByUsername(username);
+			if (user != null && passwordEncoder.matches(password, user.getHash())) {
 				Map<String, Object> claims = new HashMap<>();
 				claims.put("id", user.getId());
 				claims.put("username", username);
