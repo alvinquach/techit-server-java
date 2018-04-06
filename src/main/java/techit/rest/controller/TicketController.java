@@ -44,7 +44,7 @@ public class TicketController {
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	/** Get all tickets. */
-	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
+	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN, Position.TECHNICIAN})
 	@RequestMapping(method = RequestMethod.GET)
 	public List<Ticket> getTickets() {
 		return ticketDao.getTickets();
