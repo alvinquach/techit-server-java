@@ -19,6 +19,7 @@ import techit.authentication.TokenAuthenticationService;
 import techit.model.Priority;
 import techit.model.Status;
 import techit.model.Ticket;
+import techit.model.Unit;
 import techit.util.StringUtils;
 
 
@@ -45,7 +46,7 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 	
 	@Test
 	public void testOk() throws Exception{
-		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		Ticket ticket = new Ticket();
 		ticket.setPriority(Priority.MEDIUM);
@@ -75,10 +76,30 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 				responseObject.getLocation().equals(ticket.getLocation());
 	}
 	
+	@Test
+	public void testForbidden() throws Exception{
+		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		
+		Ticket ticket = new Ticket();
+		ticket.setPriority(Priority.MEDIUM);
+		ticket.setSubject(StringUtils.random(10));
+		ticket.setDetails("Fixed projector in A309");
+		ticket.setLocation("A309");
+		ticket.setUnit(new Unit(2L));
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}", 1L)
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(objectMapper.writeValueAsString(ticket));
+		
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
+	}
+	
 	
 	@Test
 	public void missingTicket() throws Exception {
-		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		Ticket ticket = new Ticket();
 		ticket.setPriority(Priority.MEDIUM);

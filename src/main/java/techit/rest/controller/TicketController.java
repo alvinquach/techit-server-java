@@ -85,7 +85,11 @@ public class TicketController {
 	 * should not be changed (ie. createdBy and createdDate).
 	 */
 	@RequestMapping(value = "/{ticketId}", method = RequestMethod.PUT)
-	public Ticket updateTicket(@PathVariable Long ticketId, @RequestBody Ticket ticket) {
+	public Ticket updateTicket(HttpServletRequest request,@PathVariable Long ticketId, @RequestBody Ticket ticket) {
+		User user = tokenAuthenticationService.getUserFromRequest(request);
+		if(hasPermissionToEditTicket(user,ticket) == false) {
+			throw new RestException(403, "You do not have permission to access this endpoint.");
+		}
 
 		// TODO Limit the users that can edit a ticket.
 
@@ -290,6 +294,11 @@ public class TicketController {
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
+		
+		if(hasPermissionToEditTicket(requestor,ticket) == false) {
+			throw new RestException(403, "You do not have permission to access this endpoint.");
+		}
+
 
 		Date current = new Date();
 
