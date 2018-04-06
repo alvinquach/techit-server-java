@@ -86,11 +86,11 @@ public class TicketController {
 	 */
 	@RequestMapping(value = "/{ticketId}", method = RequestMethod.PUT)
 	public Ticket updateTicket(@PathVariable Long ticketId, @RequestBody Ticket ticket) {
-		
+
 		// TODO Limit the users that can edit a ticket.
-		
+
 		Ticket target = ticketDao.getTicket(ticketId);
-		
+
 		if (target == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
@@ -143,22 +143,23 @@ public class TicketController {
 		if (requestor.getPosition() == Position.USER) {
 			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
-		
+
 		Ticket ticket = ticketDao.getTicketWithTechnicians(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
 
 		Unit unit = ticket.getUnit();
-		
-		// If the ticket is not assigned to any unit
+
+		// If the ticket is not assigned to any unit.
+		// Ideally this case should never occur.
 		if (unit == null) {
 			throw new RestException(400, "The ticket is not assigned to any units.");
 		}
 
-		// Technicians can only assign themselves to tickets.
-		if (requestor.getPosition() != Position.SYS_ADMIN && !requestor.getId().equals(userId)) {
-			throw new RestException(403, "You are not allowed to assign this user to the ticket.");
+		// Check if the requestor has permission to make the change.
+		if (!hasPermissionToChangeAssignment(requestor, ticket, userId)) {
+			throw new RestException(403, "You are not allowed to assign this users to the ticket.");
 		}
 
 		// Check if the user is already assigned to the ticket. If they are, then throw an error.
@@ -186,8 +187,8 @@ public class TicketController {
 		return ticketDao.saveTicket(ticket).getTechnicians();
 
 	}
-	
-	
+
+
 	/**
 	 * Removes a technician from a ticket.
 	 * Admins can remove any user from tickets.
@@ -197,33 +198,32 @@ public class TicketController {
 	 */
 	@RequestMapping(value = "/{ticketId}/technicians/{userId}" , method=RequestMethod.DELETE)
 	public Collection<User> removeTechniciansFromTicket(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Long userId) {
-		
+
 		// Regular users cannot access this method, no matter what.
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 		if (requestor.getPosition() == Position.USER) {
 			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
-		
+
 		Ticket ticket = ticketDao.getTicketWithTechnicians(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
-		
-		// Admins can always remove shit, and technicians can always remove themselves from a ticket.
-		// If the requestor did not satisfy the above criteria, then throw an error.
-		if (requestor.getPosition() != Position.SYS_ADMIN && !requestor.getId().equals(userId)) {
+
+		// Check if the requestor has permission to make the change.
+		if (!hasPermissionToChangeAssignment(requestor, ticket, userId)) {
 			throw new RestException(403, "You are not allowed to remove this user from the ticket.");
 		}
 
 		// Remove the technician from the ticket.
 		if (!ticket.getTechnicians().remove(new User(userId))) {
-			
+
 			// If nothing was removed, then throw an error.
 			throw new RestException(400, "User was not assigned to the ticket.");
 		}
 
 		return ticketDao.saveTicket(ticket).getTechnicians();
-		
+
 	}
 
 
@@ -308,6 +308,17 @@ public class TicketController {
 
 		return ticketDao.saveTicket(ticket);
 
+	}
+
+	/**
+	 * Helper method for determining whether the user has permissions to change the technician assignment of a ticket.
+	 * Non-admins can only change technician assignments of tickets that belong to their unit.
+	 * Technicians can only change the assignments of themselves.
+	 */
+	private boolean hasPermissionToChangeAssignment(User requestor, Ticket ticket, Long assigneeId) {
+		return requestor.getPosition() == Position.SYS_ADMIN || 
+				(ticket.getUnit().equals(requestor.getUnit()) &&
+						(requestor.getPosition() != Position.TECHNICIAN || requestor.getId().equals(assigneeId)));
 	}
 
 

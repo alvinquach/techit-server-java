@@ -1,5 +1,6 @@
 package techit.model.dao.jpa;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -66,18 +67,14 @@ public class UserDaoImpl implements UserDao {
 
 	@Override
 	public List<User> getTechniciansByUnit(Unit unit) {
-		return entityManager.createQuery("from User where unit = :unit and position = :position", User.class)
-				.setParameter("unit", unit)
-				.setParameter("position", Position.TECHNICIAN)
-				.getResultList();
 		
-	}
-
-	@Override
-	public List<User> getSupervisorsByUnit(Unit unit) {
-		return entityManager.createQuery("from User where unit = :unit and position = :position", User.class)
+		List<Position> positions = new ArrayList<>();
+		positions.add(Position.TECHNICIAN);
+		positions.add(Position.SUPERVISING_TECHNICIAN);
+		
+		return entityManager.createQuery("from User where unit = :unit and position in (:positions)", User.class)
 				.setParameter("unit", unit)
-				.setParameter("position", Position.SUPERVISING_TECHNICIAN)
+				.setParameter("positions", positions)
 				.getResultList();
 		
 	}
