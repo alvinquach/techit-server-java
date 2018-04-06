@@ -309,7 +309,17 @@ public class TicketController {
 		return ticketDao.saveTicket(ticket);
 
 	}
+	
+	
+	/**
+	 * Helper method for determining whether the user has permissions to edit the ticket in general.
+	 * Non-admins can only edit tickets that belong to their unit.
+	 */
+	private boolean hasPermissionToEditTicket(User requestor, Ticket ticket) {
+		return requestor.getPosition() == Position.SYS_ADMIN || ticket.getUnit().equals(requestor.getUnit());
+	}
 
+	
 	/**
 	 * Helper method for determining whether the user has permissions to change the technician assignment of a ticket.
 	 * Non-admins can only change technician assignments of tickets that belong to their unit.
