@@ -91,8 +91,6 @@ public class TicketController {
 			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
 
-		// TODO Limit the users that can edit a ticket.
-
 		Ticket target = ticketDao.getTicket(ticketId);
 
 		if (target == null) {
@@ -100,7 +98,6 @@ public class TicketController {
 		}
 
 		// Copy fields over to the target ticket object.
-		// TODO Do we need technicians, status, and priority?
 		target.setStartDate(ticket.getStartDate());
 		target.setEndDate(ticket.getEndDate());
 		target.setSubject(ticket.getSubject());
@@ -110,7 +107,7 @@ public class TicketController {
 		target.setPriority(ticket.getPriority());
 		target.setLocation(ticket.getLocation());
 		target.setCompletionDetails(ticket.getCompletionDetails());
-		target.setUnit(ticket.getUnit()); // TODO We need to reinforce assigned technicians when the assigned unit changes.
+		
 
 		// Update the last updated field.
 		target.setLastUpdated(new Date());
