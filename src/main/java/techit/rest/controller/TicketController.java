@@ -340,10 +340,12 @@ public class TicketController {
 	
 	/**
 	 * Helper method for determining whether the user has permissions to edit the ticket in general.
+	 * Regular users should not be able to edit tickets.
 	 * Non-admins can only edit tickets that belong to their unit.
 	 */
 	private boolean hasPermissionToEditTicket(User requestor, Ticket ticket) {
-		return requestor.getPosition() == Position.SYS_ADMIN || ticket.getUnit().equals(requestor.getUnit());
+		return requestor.getPosition() != Position.USER && 
+				(requestor.getPosition() == Position.SYS_ADMIN || ticket.getUnit().equals(requestor.getUnit()));
 	}
 
 	
@@ -351,6 +353,7 @@ public class TicketController {
 	 * Helper method for determining whether the user has permissions to change the technician assignment of a ticket.
 	 * Non-admins can only change technician assignments of tickets that belong to their unit.
 	 * Technicians can only change the assignments of themselves.
+	 * Regular users should be handled separately.
 	 */
 	private boolean hasPermissionToChangeAssignment(User requestor, Ticket ticket, Long assigneeId) {
 		return requestor.getPosition() == Position.SYS_ADMIN || 
