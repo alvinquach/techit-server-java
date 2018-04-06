@@ -1,5 +1,6 @@
 package techit.model.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import techit.model.Status;
 import techit.model.Ticket;
 import techit.model.Unit;
 import techit.model.User;
+import techit.util.StringUtils;
 
 @Test(groups = "TicketDaoTest")
 @WebAppConfiguration
@@ -24,15 +26,14 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 
     @Test
     public void getTicket() {
-        assert ticketDao.getTicket(1L).getCreatedBy().getId() == 1L;
+        assert ticketDao.getTicket(1L).getId().equals(1L);
     }
     
     @Test
     public void getTicketsByCreatedBy() {
     	
     	// Create a user for querying.
-    	User user = new User();
-    	user.setId(2L);
+    	User user = new User(3L);
     	
     	// Query for the tickets.
 		List<Ticket> tickets = ticketDao.getTicketsByCreator(user);
@@ -54,17 +55,20 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
 
     @Test
     public void saveTicket() {
-    	User user = new User();
-    	user.setId(1L);
     	
     	Ticket ticket = new Ticket();
         ticket.setPriority(Priority.NA);
         ticket.setStatus(Status.ONHOLD);
-        ticket.setCreatedBy(user);
+        ticket.setCreatedBy(new User(1L));
+        ticket.setCreatedDate(new Date());
+        ticket.setSubject(StringUtils.random(20));
         
         ticket = ticketDao.saveTicket(ticket);
         
-        assert ticket.getId() != null;
+        assert ticket.getId() != null &&
+        		ticket.getPriority() == Priority.NA &&
+        		ticket.getStatus() == Status.ONHOLD &&
+        		ticket.getCreatedBy().getId().equals(1L);
     }
     
 
