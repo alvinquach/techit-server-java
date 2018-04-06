@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "units")
-public class Unit implements Serializable{
+public class Unit implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -22,6 +22,12 @@ public class Unit implements Serializable{
 	// TODO Should this be unique?
 	@Column(nullable = false)
 	private String name;
+	
+	public Unit() {}
+	
+	public Unit(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;
@@ -37,6 +43,25 @@ public class Unit implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof Unit)) {
+			return false;
+		}
+		if (id == null || ((Unit)o).getId() == null) {
+			return false;
+		}
+		return id.equals(((Unit)o).getId());
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (id * 13 + 17);
 	}
 
 }
