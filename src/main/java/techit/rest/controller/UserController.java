@@ -87,29 +87,46 @@ public class UserController {
 
 
 	@RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT)
-	public User updateUser(@PathVariable Long userId, @RequestBody User user) {
+	public User updateUser(HttpServletRequest request, @PathVariable Long userId, @RequestBody User user) {
 
 		User target = userDao.getUser(userId);
 
 		if (target == null) {
 			throw new EntityDoesNotExistException(User.class);
 		}
+		
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
+		
+		if (requestor.getPosition() != Position.SYS_ADMIN && !requestor.equals(target)) {
+			throw new RestException(403, "You do not have permission to edit this user.");
+		}
 
 		// Update the target user's fields.
-		// TODO Add ability to change username and password?
-		target.setDepartment(user.getDepartment());
 		target.setFirstName(user.getFirstName());
 		target.setLastName(user.getLastName());
-		target.setPosition(user.getPosition());
 		target.setEmail(user.getEmail());
 		target.setPhoneNumber(user.getPhoneNumber());
-		target.setUnit(user.getUnit());
-
+		
+		// Only admins can edit these fields.
+		if (requestor.getPosition() == Position.SYS_ADMIN) {
+			target.setDepartment(user.getDepartment());
+			target.setPosition(user.getPosition());
+			target.setUnit(user.getUnit());
+		}
+		
 		return userDao.saveUser(target);
 	}
 
 	@RequestMapping(value = "/users/{userId}/tickets", method = RequestMethod.GET)
-	public List<Ticket> getTicketsByCreator(@PathVariable Long userId) {
+	public List<Ticket> getTicketsByCreator(HttpServletRequest request, @PathVariable Long userId) {
+		
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
+		
+		// Regular users can only access tickets that they created.
+		if (requestor.getPosition() == Position.USER && !requestor.getId().equals(userId)) {
+			throw new RestException(403, "You do not have access to this endpoint.");
+		}
+		
 		return ticketDao.getTicketsByCreator(new User(userId));
 	}
 

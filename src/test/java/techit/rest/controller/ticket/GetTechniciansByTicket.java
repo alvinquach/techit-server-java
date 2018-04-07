@@ -13,8 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import techit.authentication.TokenAuthenticationService;
 
 
@@ -30,12 +28,9 @@ public class GetTechniciansByTicket extends AbstractTransactionalTestNGSpringCon
 
 	private MockMvc mockMvc;
 
-	private ObjectMapper objectMapper;
-
 	@BeforeClass
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-		objectMapper = new ObjectMapper();
 	}
 	
 	@Test
@@ -54,7 +49,7 @@ public class GetTechniciansByTicket extends AbstractTransactionalTestNGSpringCon
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/tickets/{ticketId}/technicians",4)
+				.get("/tickets/{ticketId}/technicians",Integer.MAX_VALUE)
 				.header("Authorization", jwt);
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isNotFound());

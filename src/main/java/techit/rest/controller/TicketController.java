@@ -72,13 +72,47 @@ public class TicketController {
 
 
 	/** Get a ticket by id. */
-	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
+//	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}", method = RequestMethod.GET)
-	public Ticket getTicket(@PathVariable Long ticketId) {
+	public Ticket getTicket(HttpServletRequest request, @PathVariable Long ticketId) {
+		Ticket ticket = ticketDao.getTicket(ticketId);
+		if (ticket == null) {
+			throw new EntityDoesNotExistException(Ticket.class);
+		}
+
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
+		if (requestor.getPosition() == Position.SYS_ADMIN ) {
+			return ticketDao.getTicket(ticketId);
+		}
+
+//		If requestor is not admin then check if ticket.createdBy equals requestor id
+		if (requestor.getPosition() != Position.SYS_ADMIN && requestor.getId().equals(ticket.getCreatedBy().getId())) {
+//			not having permission to change
+			if(hasPermissionToEditTicket(requestor,ticket) == false) {
+				throw new RestException(403, "You do not have permission to access this endpoint.");
+			}
+		}
+		else{
+			throw new RestException(403, "You do not have access to this endpoint.");
+		}
+		
+//		If createdby and requestor dont match, then check if requestor is a supervisor or technician 
+		if (!requestor.getId().equals(ticket.getCreatedBy().getId())) {
+			if(requestor.getPosition() == Position.SUPERVISING_TECHNICIAN || requestor.getPosition() == Position.TECHNICIAN){
+//				requestor's unit equals the ticket.unit if false, throw error
+				if (requestor.getUnit().getId() != ticket.getUnit().getId()){
+					throw new RestException(403, "You do not have access to this endpoint.");
+				}
+			}
+		}	
+		
 		return ticketDao.getTicket(ticketId);
 	}
 
-
+//	admin techit
+// supervisor amgarcia
+// technician rsanchez
+// user  peter
 	/** 
 	 * Edit the ticket with the id.
 	 * Excludes fields that have their own API and fields that
@@ -107,8 +141,6 @@ public class TicketController {
 		target.setPriority(ticket.getPriority());
 		target.setLocation(ticket.getLocation());
 		target.setCompletionDetails(ticket.getCompletionDetails());
-		
-
 		// Update the last updated field.
 		target.setLastUpdated(new Date());
 
@@ -157,6 +189,16 @@ public class TicketController {
 		if (unit == null) {
 			throw new RestException(400, "The ticket is not assigned to any units.");
 		}
+		
+
+
+//		If requestor is not admin then check if ticket.createdBy equals requestor id
+		if (!hasPermissionToChangeAssignment(requestor, ticket, userId)) {
+			User user = new User();
+			user.getId();
+			throw new RestException(403, "You are not allowed to assign this users to the ticket.");
+		}
+
 
 		// Check if the requestor has permission to make the change.
 		if (!hasPermissionToChangeAssignment(requestor, ticket, userId)) {
@@ -235,7 +277,7 @@ public class TicketController {
 	 * Each status change automatically adds an Update to the ticket.
 	 */
 	@RequestMapping(value = "/{ticketId}/status/{status}" , method=RequestMethod.PUT)
-	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
+	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody(required = false) String description) {
 
 		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
@@ -244,8 +286,20 @@ public class TicketController {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
 		
-		if(hasPermissionToEditTicket(requestor,ticket) == false) {
-			throw new RestException(403, "You do not have permission to access this endpoint.");
+
+		if (!hasPermissionToEditTicket(requestor, ticket)) {
+			throw new RestException(403, "You do not have permission to modify the ticket.");
+		}
+		
+		if (StringUtils.isNullOrEmpty(description)) {
+			// TODO Find out which status change require the description.
+			// For now, we just require description for all status changes.
+			throw new RestException(400, "Description of the status change is required.");
+		}
+		
+		// Check if the status was changed.
+		if (ticket.getStatus() == status) {
+			throw new RestException(400, "Status was already " + status.getValue() + ".");
 		}
 
 		Date current = new Date();
@@ -253,10 +307,16 @@ public class TicketController {
 		// Update the ticket properties.
 		ticket.setStatus(status);
 		ticket.setLastUpdated(current);
+		
+		StringBuilder changeDetails = new StringBuilder()
+		.append("Status changed to ")
+		.append(status.getValue())
+		.append(". Reason: ")
+		.append(description);
 
 		// Create a new update to document the status change and add it to the ticket.
 		Update update = new Update(); 
-		update.setUpdateDetails(description); // TODO Add status change to the description
+		update.setUpdateDetails(changeDetails.toString());
 		update.setTicket(ticket);
 		update.setModifiedDate(current);
 		update.setModifiedBy(requestor);

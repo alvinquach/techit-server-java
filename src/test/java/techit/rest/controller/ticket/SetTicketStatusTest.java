@@ -1,6 +1,5 @@
 package techit.rest.controller.ticket;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests;
@@ -17,12 +16,15 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import techit.authentication.TokenAuthenticationService;
+import techit.model.Status;
+import techit.model.Ticket;
+import techit.util.StringUtils;
 
-
-@Test(groups = "GetTicketsTest")
+@Test(groups = "AssignTechnicianToTicketTest")
 @WebAppConfiguration
 @ContextConfiguration(locations = "classpath:applicationContext.xml")
-public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTests{
+public class SetTicketStatusTest extends AbstractTransactionalTestNGSpringContextTests {
+
 	@Autowired
 	private WebApplicationContext wac;
 
@@ -38,17 +40,30 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 		objectMapper = new ObjectMapper();
 	}
-	
+
 	@Test
-	public void testOk() throws Exception{
+	public void testOk() throws Exception {
+
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/tickets")
-				.header("Authorization", jwt);
+				.put("/tickets/{ticketId}/status/{status}", 2L, Status.COMPLETED)
+				.header("Authorization", jwt)
+				.contentType("application/json")
+				.content(StringUtils.random(300));
 
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isOk());
+		String res = mockMvc.perform(builder)
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+
+		Ticket responseObject = objectMapper.readValue(res, Ticket.class);
+
+		assert responseObject.getStatus() == Status.COMPLETED;
+
 	}
+	
 	
 	@Test
 	public void testForbidden() throws Exception {
@@ -56,13 +71,40 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 		String jwt = tokenAuthenticationService.generateToken("jcota", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/tickets")
+				.put("/tickets/{ticketId}/status/{status}", 2L, Status.COMPLETED)
 				.header("Authorization", jwt);
 
 		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
 
 	}
 	
+	
+	@Test
+	public void testMissingDescription() throws Exception {
 
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}/status/{status}", 2L, Status.COMPLETED)
+				.header("Authorization", jwt);
+
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+	}
+	
+	
+	/** Failure due to setting the status that was already set. */
+	@Test
+	public void testStatusNoChange() throws Exception {
+
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}/status/{status}", 2L, Status.INPROGRESS)
+				.header("Authorization", jwt);
+
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+	}
+	
 }
-
