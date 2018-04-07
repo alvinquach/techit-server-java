@@ -265,6 +265,7 @@ public class TicketController {
 
 
 	/** Set the priority of a ticket. */
+	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}/priority/{priority}" , method=RequestMethod.PUT)
 	public Ticket setTicketPriority(@PathVariable Long ticketId, @PathVariable Priority priority) {
 
