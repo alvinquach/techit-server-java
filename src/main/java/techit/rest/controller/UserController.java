@@ -113,8 +113,9 @@ public class UserController {
 		return ticketDao.getTicketsByCreator(new User(userId));
 	}
 
+	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN, Position.TECHNICIAN})
 	@RequestMapping(value = "/technicians/{userId}/tickets", method = RequestMethod.GET)
-	public Object getTicketsByTechnician(@PathVariable Long userId) {
+	public List<Ticket> getTicketsByTechnician(@PathVariable Long userId) {
 		return ticketDao.getTicketsByTechnician(new User(userId));
 	}
 }
