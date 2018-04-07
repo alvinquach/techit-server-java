@@ -109,7 +109,7 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 		
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.put("/tickets/{ticketId}", 4L)
+				.put("/tickets/{ticketId}", Long.MAX_VALUE)
 				.header("Authorization", jwt)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(ticket));
