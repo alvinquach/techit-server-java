@@ -93,7 +93,7 @@ public class AddTicketUpdatesTest extends AbstractTransactionalTestNGSpringConte
 		Update update = new Update();
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.post("/tickets/{ticketId}/update", 4L)
+				.post("/tickets/{ticketId}/update", Integer.MAX_VALUE)
 				.header("Authorization", jwt)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(update));
