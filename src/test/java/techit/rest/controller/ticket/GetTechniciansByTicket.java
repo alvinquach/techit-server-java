@@ -50,7 +50,7 @@ public class GetTechniciansByTicket extends AbstractTransactionalTestNGSpringCon
 	}
 	
 	@Test
-	public void missingTicket() throws Exception{
+	public void ticketNotFound() throws Exception{
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders

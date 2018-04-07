@@ -87,7 +87,7 @@ public class AddTicketUpdatesTest extends AbstractTransactionalTestNGSpringConte
 	}
 	
 	@Test
-	public void testFailure() throws Exception {
+	public void ticketNotFound() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
 		
 		Update update = new Update();

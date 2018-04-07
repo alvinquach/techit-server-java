@@ -234,7 +234,6 @@ public class TicketController {
 	 * this message should be included in the response body.
 	 * Each status change automatically adds an Update to the ticket.
 	 */
-	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}/status/{status}" , method=RequestMethod.PUT)
 	public Ticket setTicketStatus(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Status status, @RequestBody String description) {
 
@@ -243,6 +242,10 @@ public class TicketController {
 		Ticket ticket = ticketDao.getTicket(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
+		}
+		
+		if(hasPermissionToEditTicket(requestor,ticket) == false) {
+			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
 
 		Date current = new Date();
@@ -265,13 +268,17 @@ public class TicketController {
 
 
 	/** Set the priority of a ticket. */
-	@AllowedUserPositions({Position.SYS_ADMIN, Position.SUPERVISING_TECHNICIAN})
 	@RequestMapping(value = "/{ticketId}/priority/{priority}" , method=RequestMethod.PUT)
-	public Ticket setTicketPriority(@PathVariable Long ticketId, @PathVariable Priority priority) {
+	public Ticket setTicketPriority(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Priority priority) {
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
 		Ticket ticket = ticketDao.getTicket(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
+		}
+		
+		if(hasPermissionToEditTicket(requestor,ticket) == false) {
+			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
 
 		ticket.setPriority(priority);

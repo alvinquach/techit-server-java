@@ -46,7 +46,7 @@ public class SetTicketPriorityTest extends AbstractTransactionalTestNGSpringCont
 	@Test
 	public void testOk() throws Exception {
 
-		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.put("/tickets/{ticketId}/priority/{priority}", 2L, Priority.LOW)
@@ -67,7 +67,7 @@ public class SetTicketPriorityTest extends AbstractTransactionalTestNGSpringCont
 	}
 	
 	@Test
-	public void missingTicket() throws Exception {
+	public void ticketNotFound() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders

@@ -98,7 +98,7 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 	
 	
 	@Test
-	public void missingTicket() throws Exception {
+	public void ticketNotFound() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		Ticket ticket = new Ticket();

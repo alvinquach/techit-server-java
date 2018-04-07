@@ -52,7 +52,7 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 	@Test
 	public void testForbidden() throws Exception {
 
-		String jwt = tokenAuthenticationService.generateToken("amgarcia", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("jcota", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.get("/tickets")
