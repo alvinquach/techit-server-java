@@ -98,7 +98,7 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 	
 	
 	@Test
-	public void missingTicket() throws Exception {
+	public void ticketNotFound() throws Exception {
 		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		Ticket ticket = new Ticket();
@@ -109,7 +109,7 @@ public class EditTicketTest extends AbstractTransactionalTestNGSpringContextTest
 		
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.put("/tickets/{ticketId}", 4L)
+				.put("/tickets/{ticketId}", Long.MAX_VALUE)
 				.header("Authorization", jwt)
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(ticket));

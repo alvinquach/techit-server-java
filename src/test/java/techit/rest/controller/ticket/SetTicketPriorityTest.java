@@ -16,6 +16,8 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import techit.authentication.TokenAuthenticationService;
+import techit.model.Priority;
+
 import techit.model.Status;
 import techit.util.StringUtils;
 
@@ -39,22 +41,40 @@ public class SetTicketPriorityTest extends AbstractTransactionalTestNGSpringCont
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 		objectMapper = new ObjectMapper();
-	
+
 	}
+	
 	@Test
 	public void testOk() throws Exception {
-	
-	String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 
-	MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-			.put("/{ticketId}/priority/{priority}", 2L, Status.COMPLETED)
-			.header("Authorization", jwt);
-	
-	 mockMvc.perform(builder)
-			.andExpect(MockMvcResultMatchers.status().isOk());
-			
-			/*.contentType("application/json")
-			.content(StringUtils.random(300));*/
-	
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}/priority/{priority}", 2L, Priority.LOW)
+				.header("Authorization", jwt);
+
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isOk());
 	}
+	
+	@Test
+	public void testForbidden() throws Exception {
+		String jwt = tokenAuthenticationService.generateToken("jcota", "abcd");
+
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}/priority/{priority}", 2L, Priority.LOW)
+				.header("Authorization", jwt);
+
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
+	
+	@Test
+	public void ticketNotFound() throws Exception {
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.put("/tickets/{ticketId}/priority/{priority}", Long.MAX_VALUE, Priority.LOW)
+				.header("Authorization", jwt);
+
+		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isNotFound());
+	}
+}

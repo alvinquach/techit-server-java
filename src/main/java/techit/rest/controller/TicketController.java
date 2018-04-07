@@ -286,6 +286,7 @@ public class TicketController {
 			throw new EntityDoesNotExistException(Ticket.class);
 		}
 		
+
 		if (!hasPermissionToEditTicket(requestor, ticket)) {
 			throw new RestException(403, "You do not have permission to modify the ticket.");
 		}
@@ -328,11 +329,16 @@ public class TicketController {
 
 	/** Set the priority of a ticket. */
 	@RequestMapping(value = "/{ticketId}/priority/{priority}" , method=RequestMethod.PUT)
-	public Ticket setTicketPriority(@PathVariable Long ticketId, @PathVariable Priority priority) {
+	public Ticket setTicketPriority(HttpServletRequest request, @PathVariable Long ticketId, @PathVariable Priority priority) {
+		User requestor = tokenAuthenticationService.getUserFromRequest(request);
 
 		Ticket ticket = ticketDao.getTicket(ticketId);
 		if (ticket == null) {
 			throw new EntityDoesNotExistException(Ticket.class);
+		}
+		
+		if(hasPermissionToEditTicket(requestor,ticket) == false) {
+			throw new RestException(403, "You do not have permission to access this endpoint.");
 		}
 
 		ticket.setPriority(priority);
