@@ -63,12 +63,12 @@ public class GetTicketTest extends AbstractTransactionalTestNGSpringContextTests
 	}
 	
 	@Test
-	public void testAccessUserNotInTicket() throws Exception {
+	public void testAccessUserInTicket() throws Exception {
 		
-		String jwt = tokenAuthenticationService.generateToken("jcota", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("peter", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/tickets/{ticketId}",2L)
+				.get("/tickets/{ticketId}",4L)
 				.header("Authorization", jwt);
 		
 		mockMvc.perform(builder)
@@ -79,12 +79,27 @@ public class GetTicketTest extends AbstractTransactionalTestNGSpringContextTests
 	
 	
 	@Test
-	public void testAccessUserInTicket() throws Exception {
+	public void testAccessAdminInTicket() throws Exception {
 		
-		String jwt = tokenAuthenticationService.generateToken("peter", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("techit", "abcd");
 		
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-				.get("/tickets/{ticketId}",2L)
+				.get("/tickets/{ticketId}",1L)
+				.header("Authorization", jwt);
+		
+		mockMvc.perform(builder)
+		.andDo(MockMvcResultHandlers.print())
+		.andExpect(MockMvcResultMatchers.status().isOk());
+		
+	}
+	
+	@Test
+	public void testAccessTechnicianInTicket() throws Exception {
+		
+		String jwt = tokenAuthenticationService.generateToken("rsanchez", "abcd");
+		
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+				.get("/tickets/{ticketId}",3L)
 				.header("Authorization", jwt);
 		
 		mockMvc.perform(builder)

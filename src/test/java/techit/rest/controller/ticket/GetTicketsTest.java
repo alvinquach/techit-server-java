@@ -14,8 +14,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import techit.authentication.TokenAuthenticationService;
 
 
@@ -31,12 +29,9 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 
 	private MockMvc mockMvc;
 
-	private ObjectMapper objectMapper;
-
 	@BeforeClass
 	private void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-		objectMapper = new ObjectMapper();
 	}
 	
 	@Test
@@ -52,8 +47,7 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 	
 	@Test
 	public void testForbidden() throws Exception {
-
-		String jwt = tokenAuthenticationService.generateToken("jcota", "abcd");
+		String jwt = tokenAuthenticationService.generateToken("jdoe", "abcd");
 
 		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
 				.get("/tickets")
