@@ -119,7 +119,9 @@ public class CreateTicketTest extends AbstractTransactionalTestNGSpringContextTe
 				.contentType("application/json")
 				.content(objectMapper.writeValueAsString(new Ticket()));
 
-		mockMvc.perform(builder).andExpect(MockMvcResultMatchers.status().isBadRequest());
+		mockMvc.perform(builder)
+		.andDo(MockMvcResultHandlers.print())
+		.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
 	}
 	
