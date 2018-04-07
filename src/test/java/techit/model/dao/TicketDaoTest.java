@@ -62,6 +62,7 @@ public class TicketDaoTest extends AbstractTransactionalTestNGSpringContextTests
         ticket.setCreatedBy(new User(1L));
         ticket.setCreatedDate(new Date());
         ticket.setSubject(StringUtils.random(20));
+        ticket.setUnit(new Unit(1L));
         
         ticket = ticketDao.saveTicket(ticket);
         
