@@ -66,17 +66,3 @@ public class GetTicketsTest extends AbstractTransactionalTestNGSpringContextTest
 
 }
 
-//SYS_ADMIN,
-//SUPERVISING_TECHNICIAN,
-//TECHNICIAN,
-//USER;
-
-//---user
-//public Position getPosition() {
-//	return position;
-//}
-
-//----ticket
-//public User getCreatedBy() {
-//	return createdBy;
-//}
